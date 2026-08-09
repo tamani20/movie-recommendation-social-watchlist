@@ -33,3 +33,6 @@ Thumbs.db
 # Firebase service account credentials
 serviceAccountKey.json
 firebase-adminsdk-*.json
+
+# Firebase local configuration
+.firebase/
