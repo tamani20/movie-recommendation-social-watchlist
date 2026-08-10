@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+
 import {
     searchMovies,
     getPopularMovies
 } from "../services/api";
+
+import MovieCard from "../components/MovieCard";
 
 function Movies() {
     const [movies, setMovies] = useState([]);
@@ -86,21 +89,18 @@ function Movies() {
 
             {!loading && !error && (
                 <section>
-                    {movies.map((movie) => (
-                        <article key={movie.id}>
-                            <h2>
-                                {movie.title}
-                            </h2>
-
-                            <p>
-                                {movie.release_date}
-                            </p>
-
-                            <p>
-                                {movie.overview}
-                            </p>
-                        </article>
-                    ))}
+                    {movies.length === 0 ? (
+                        <p>
+                            No movies found.
+                        </p>
+                    ) : (
+                        movies.map((movie) => (
+                            <MovieCard
+                                key={movie.id}
+                                movie={movie}
+                            />
+                        ))
+                    )}
                 </section>
             )}
         </main>

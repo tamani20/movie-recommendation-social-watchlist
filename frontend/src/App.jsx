@@ -9,6 +9,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Movies from "./pages/Movies";
 
+import MovieDetails from "./pages/MovieDetails";
+
+import Watchlist from "./pages/Watchlist";
+
 function App() {
     return (
         <BrowserRouter>
@@ -41,6 +45,20 @@ function App() {
                 <Route
                     path="/movies"
                     element={<Movies />}
+                />
+
+                <Route
+                    path="/movies/:id"
+                    element={<MovieDetails />}
+                />
+
+                <Route
+                    path="/watchlist"
+                    element={
+                        <ProtectedRoute>
+                            <Watchlist />
+                        </ProtectedRoute>
+                    }
                 />
 
             </Routes>
