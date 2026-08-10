@@ -1,32 +1,47 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+import { auth } from "../services/firebase";
+import { createUserProfile } from "../services/userService";
 
 function Register() {
+    const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const [error, setError] = useState("");
-    const [message, setMessage] = useState("");
+
     const navigate = useNavigate();
 
     async function handleRegister(event) {
         event.preventDefault();
 
         setError("");
-        setMessage("");
 
         try {
-            await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
+            const userCredential =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+            const user = userCredential.user;
+
+            await createUserProfile(
+                user.uid,
+                user.email,
+                displayName
             );
 
-            setMessage("Account created successfully.");
             navigate("/dashboard");
         } catch (error) {
-            setError(error.message);
+            console.error(error);
+
+            setError(
+                "Unable to create account. Please check your information and try again."
+            );
         }
     }
 
@@ -35,6 +50,23 @@ function Register() {
             <h1>Create an Account</h1>
 
             <form onSubmit={handleRegister}>
+
+                <div>
+                    <label htmlFor="displayName">
+                        Display Name
+                    </label>
+
+                    <input
+                        id="displayName"
+                        type="text"
+                        value={displayName}
+                        onChange={(event) =>
+                            setDisplayName(event.target.value)
+                        }
+                        required
+                    />
+                </div>
+
                 <div>
                     <label htmlFor="email">
                         Email
@@ -64,17 +96,15 @@ function Register() {
                             setPassword(event.target.value)
                         }
                         required
+                        minLength="6"
                     />
                 </div>
 
                 <button type="submit">
                     Create Account
                 </button>
-            </form>
 
-            {message && (
-                <p>{message}</p>
-            )}
+            </form>
 
             {error && (
                 <p>{error}</p>
