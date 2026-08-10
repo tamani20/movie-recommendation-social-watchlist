@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import Movies from "./pages/Movies";
+
 function App() {
     return (
         <BrowserRouter>
@@ -34,6 +36,11 @@ function App() {
                             <Dashboard />
                         </ProtectedRoute>
                     }
+                />
+
+                <Route
+                    path="/movies"
+                    element={<Movies />}
                 />
 
             </Routes>

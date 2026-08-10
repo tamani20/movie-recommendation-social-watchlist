@@ -2,22 +2,22 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const movieRoutes = require("./routes/movieRoutes");
+
 const app = express();
 
 const PORT = process.env.PORT || 5001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Basic test route
 app.get("/", (req, res) => {
     res.json({
-        message: "Movie Recommendation & Social Watchlist API"
+        message:
+            "Movie Recommendation & Social Watchlist API"
     });
 });
 
-// Health check
 app.get("/api/health", (req, res) => {
     res.json({
         status: "OK",
@@ -25,7 +25,10 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// Start server
+app.use("/api/movies", movieRoutes);
+
 app.listen(PORT, () => {
-    console.log(`Backend server running on port ${PORT}`);
+    console.log(
+        `Backend server running on port ${PORT}`
+    );
 });
