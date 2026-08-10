@@ -8,7 +8,9 @@ import {
     getFriends,
     getReceivedFriendRequests,
     acceptFriendRequest,
-    rejectFriendRequest
+    rejectFriendRequest,
+    getUserProfile,
+    removeFriend
 } from "../services/friendService";
 
 function Friends() {
@@ -31,21 +33,69 @@ function Friends() {
 
     async function loadSocialData() {
         try {
+            setLoading(true);
+
             const friendsData =
-                await getFriends(currentUser.uid);
+                await getFriends(
+                    currentUser.uid
+                );
+
+            console.log(
+                "Friends from Firestore:",
+                friendsData
+            );
+
+            const friendsWithProfiles =
+                await Promise.all(
+                    friendsData.map(
+                        async (friend) => {
+
+                            console.log(
+                                "Friend ID being looked up:",
+                                friend.friendId
+                            );
+
+                            const profile =
+                                await getUserProfile(
+                                    friend.friendId
+                                );
+
+                            console.log(
+                                "Profile returned:",
+                                profile
+                            );
+
+                            return {
+                                ...friend,
+                                profile
+                            };
+                        }
+                    )
+                );
+
+            console.log(
+                "Friends with profiles:",
+                friendsWithProfiles
+            );
+
+            setFriends(
+                friendsWithProfiles
+            );
 
             const requestsData =
                 await getReceivedFriendRequests(
                     currentUser.uid
                 );
 
-            setFriends(friendsData);
-            setRequests(requestsData);
+            setRequests(
+                requestsData
+            );
+
         } catch (error) {
             console.error(error);
 
             setError(
-                "Unable to load friends."
+                "Unable to load social information."
             );
         } finally {
             setLoading(false);
@@ -155,6 +205,37 @@ function Friends() {
 
             setError(
                 "Unable to reject request."
+            );
+        }
+    }
+
+    async function handleRemoveFriend(
+        friendshipId
+    ) {
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to remove this friend?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            await removeFriend(
+                friendshipId
+            );
+
+            await loadSocialData();
+
+        } catch (error) {
+            console.error(
+                "Error removing friend:",
+                error
+            );
+
+            setError(
+                "Unable to remove friend."
             );
         }
     }
@@ -301,16 +382,32 @@ function Friends() {
                     friends.map(
                         (friend) => (
                             <article
-                                key={
-                                    friend.id
-                                }
+                                key={friend.id}
                             >
-                                <p>
-                                    Friend ID:{" "}
+                                <h3>
                                     {
-                                        friend.userId
+                                        friend.profile
+                                            ?.displayName ||
+                                        "Unknown User"
+                                    }
+                                </h3>
+
+                                <p>
+                                    {
+                                        friend.profile
+                                            ?.email ||
+                                        "No email available"
                                     }
                                 </p>
+                                <button
+                                    onClick={() =>
+                                        handleRemoveFriend(
+                                            friend.id
+                                        )
+                                    }
+                                >
+                                    Remove Friend
+                                </button>
                             </article>
                         )
                     )

@@ -1,12 +1,14 @@
 import {
     collection,
     doc,
+    getDoc,
     addDoc,
     getDocs,
     query,
     where,
     serverTimestamp,
     updateDoc,
+    deleteDoc,
     limit
 } from "firebase/firestore";
 
@@ -429,4 +431,68 @@ export async function getFriends(
     );
 
     return friendships;
+}
+
+// ==========================================
+// GET USER PROFILE
+// ==========================================
+
+export async function getUserProfile(userId) {
+    console.log(
+        "getUserProfile looking for:",
+        userId
+    );
+
+    const userRef = doc(
+        db,
+        "users",
+        userId
+    );
+
+    const snapshot =
+        await getDoc(userRef);
+
+    console.log(
+        "Profile exists:",
+        snapshot.exists()
+    );
+
+    if (!snapshot.exists()) {
+        console.log(
+            "No profile found for:",
+            userId
+        );
+
+        return null;
+    }
+
+    const profile = {
+        id: snapshot.id,
+        ...snapshot.data()
+    };
+
+    console.log(
+        "Profile found:",
+        profile
+    );
+
+    return profile;
+}
+
+// ==========================================
+// REMOVE FRIEND
+// ==========================================
+
+export async function removeFriend(
+    friendshipId
+) {
+    const friendshipRef = doc(
+        db,
+        "friendships",
+        friendshipId
+    );
+
+    await deleteDoc(
+        friendshipRef
+    );
 }
