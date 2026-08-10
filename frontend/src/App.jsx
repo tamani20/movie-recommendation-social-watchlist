@@ -13,6 +13,8 @@ import MovieDetails from "./pages/MovieDetails";
 
 import Watchlist from "./pages/Watchlist";
 
+import Friends from "./pages/Friends";
+
 function App() {
     return (
         <BrowserRouter>
@@ -57,6 +59,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Watchlist />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/friends"
+                    element={
+                        <ProtectedRoute>
+                            <Friends />
                         </ProtectedRoute>
                     }
                 />
