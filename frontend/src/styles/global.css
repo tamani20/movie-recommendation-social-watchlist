@@ -208,6 +208,198 @@ select:focus {
     margin-top: 0;
 }
 
+/* ==========================================
+   MOVIES PAGE
+========================================== */
+
+.movies-page {
+    padding-top: 45px;
+}
+
+
+/* ==========================================
+   MOVIES HEADER
+========================================== */
+
+.movies-header {
+    margin-bottom: 32px;
+}
+
+.movies-eyebrow {
+    margin: 0 0 8px;
+
+    color: #2563eb;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.movies-header h1 {
+    margin-bottom: 10px;
+
+    font-size: 2.5rem;
+}
+
+.movies-description {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 1.05rem;
+}
+
+
+/* ==========================================
+   MOVIE SEARCH
+========================================== */
+
+.movie-search {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 40px;
+}
+
+.movie-search-form {
+    display: flex;
+
+    flex: 1;
+
+    gap: 10px;
+}
+
+.movie-search-form input {
+    max-width: none;
+
+    flex: 1;
+}
+
+.movie-popular-button {
+    background: #374151;
+}
+
+.movie-popular-button:hover {
+    background: #1f2937;
+}
+
+
+/* ==========================================
+   MOVIES SECTION HEADER
+========================================== */
+
+.movies-section-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.movies-section-heading h2 {
+    margin: 0;
+}
+
+.movies-section-heading p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 0.9rem;
+}
+
+
+/* ==========================================
+   MOVIE CARD ADDITIONS
+========================================== */
+
+.movie-card-placeholder {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e5e7eb;
+
+    color: #6b7280;
+}
+
+.movie-card-content p {
+    margin: 5px 0;
+
+    color: #6b7280;
+
+    font-size: 0.9rem;
+}
+
+.movie-card-link {
+    display: inline-block;
+
+    margin-top: 10px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   PAGE MESSAGE
+========================================== */
+
+.page-message {
+    padding: 40px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   MOVIES RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+
+    .movie-search {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+    .movie-search-form {
+        width: 100%;
+    }
+
+    .movie-popular-button {
+        width: 100%;
+    }
+
+    .movies-section-heading {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 6px;
+    }
+
+}
+
 
 /* ==========================================
    REVIEW CARD

@@ -16,6 +16,9 @@ function Movies() {
     useEffect(() => {
         async function loadPopularMovies() {
             try {
+                setLoading(true);
+                setError("");
+
                 const data =
                     await getPopularMovies();
 
@@ -37,7 +40,9 @@ function Movies() {
     async function handleSearch(event) {
         event.preventDefault();
 
-        if (!query.trim()) {
+        const trimmedQuery = query.trim();
+
+        if (!trimmedQuery) {
             return;
         }
 
@@ -46,7 +51,7 @@ function Movies() {
 
         try {
             const data =
-                await searchMovies(query);
+                await searchMovies(trimmedQuery);
 
             setMovies(data.results || []);
         } catch (error) {
@@ -60,49 +65,154 @@ function Movies() {
         }
     }
 
+    async function handleShowPopular() {
+        setQuery("");
+        setLoading(true);
+        setError("");
+
+        try {
+            const data =
+                await getPopularMovies();
+
+            setMovies(data.results || []);
+        } catch (error) {
+            console.error(error);
+
+            setError(
+                "Unable to load popular movies."
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <main>
-            <h1>Movies</h1>
+        <main className="movies-page">
 
-            <form onSubmit={handleSearch}>
-                <input
-                    type="text"
-                    placeholder="Search for a movie..."
-                    value={query}
-                    onChange={(event) =>
-                        setQuery(event.target.value)
-                    }
-                />
+            {/* =========================
+                PAGE HEADER
+            ========================== */}
 
-                <button type="submit">
-                    Search
+            <section className="movies-header">
+
+                <div>
+                    <p className="movies-eyebrow">
+                        DISCOVER
+                    </p>
+
+                    <h1>Find Your Next Movie</h1>
+
+                    <p className="movies-description">
+                        Search for movies or explore
+                        what's popular right now.
+                    </p>
+                </div>
+
+            </section>
+
+
+            {/* =========================
+                SEARCH
+            ========================== */}
+
+            <section className="movie-search">
+
+                <form
+                    className="movie-search-form"
+                    onSubmit={handleSearch}
+                >
+                    <input
+                        type="text"
+                        placeholder="Search for a movie..."
+                        value={query}
+                        onChange={(event) =>
+                            setQuery(
+                                event.target.value
+                            )
+                        }
+                    />
+
+                    <button type="submit">
+                        Search
+                    </button>
+                </form>
+
+                <button
+                    className="movie-popular-button"
+                    type="button"
+                    onClick={handleShowPopular}
+                >
+                    Show Popular
                 </button>
-            </form>
+
+            </section>
+
+
+            {/* =========================
+                STATUS
+            ========================== */}
 
             {loading && (
-                <p>Loading movies...</p>
+                <div className="page-message">
+                    <p>Loading movies...</p>
+                </div>
             )}
 
             {error && (
-                <p>{error}</p>
+                <div className="error-message">
+                    {error}
+                </div>
             )}
+
+
+            {/* =========================
+                MOVIES
+            ========================== */}
 
             {!loading && !error && (
                 <section>
-                    {movies.length === 0 ? (
+
+                    <div className="movies-section-heading">
+
+                        <h2>
+                            {query.trim()
+                                ? `Search Results for "${query}"`
+                                : "Popular Movies"}
+                        </h2>
+
                         <p>
-                            No movies found.
+                            {movies.length} movies
                         </p>
+
+                    </div>
+
+
+                    {movies.length === 0 ? (
+
+                        <div className="page-message">
+                            <p>
+                                No movies found.
+                            </p>
+                        </div>
+
                     ) : (
-                        movies.map((movie) => (
-                            <MovieCard
-                                key={movie.id}
-                                movie={movie}
-                            />
-                        ))
+
+                        <div className="movie-grid">
+
+                            {movies.map((movie) => (
+                                <MovieCard
+                                    key={movie.id}
+                                    movie={movie}
+                                />
+                            ))}
+
+                        </div>
+
                     )}
+
                 </section>
             )}
+
         </main>
     );
 }
