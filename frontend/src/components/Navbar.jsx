@@ -42,7 +42,7 @@ function Navbar() {
                     to="/"
                     className="navbar-brand"
                 >
-                    🎬 MovieWatchlist
+                    🎬 Movie Recommendations & Social Watchlist
                 </Link>
 
 

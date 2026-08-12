@@ -345,7 +345,7 @@ hr {
 
 
 .navbar-brand {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 
     font-weight: 700;
 
@@ -474,6 +474,13 @@ hr {
                 12px 16px;
     }
 
+    .navbar-brand {
+        font-size: 1rem;
+
+        white-space: normal;
+
+        max-width: 280px;
+    }
 
     .navbar-links {
         order: 3;
