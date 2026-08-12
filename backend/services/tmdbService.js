@@ -36,8 +36,18 @@ async function getPopularMovies() {
     return response.data;
 }
 
+async function getMovieGenres() {
+    const response =
+        await tmdbClient.get(
+            "/genre/movie/list"
+        );
+
+    return response.data;
+}
+
 module.exports = {
     searchMovies,
     getMovieById,
-    getPopularMovies
+    getPopularMovies,
+    getMovieGenres
 };

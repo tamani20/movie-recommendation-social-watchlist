@@ -1,0 +1,430 @@
+import {
+    getDocs,
+    collection,
+    query,
+    where
+} from "firebase/firestore";
+
+import { db } from "./firebase";
+
+import {
+    getPopularMovies,
+    getMovie,
+    getMovieGenres
+} from "./api";
+
+
+// ==========================================
+// GET USER REVIEWS
+// ==========================================
+
+async function getUserReviews(userId) {
+
+    if (!userId) {
+        return [];
+    }
+
+    const reviewsQuery = query(
+        collection(db, "reviews"),
+        where("userId", "==", userId)
+    );
+
+    const snapshot =
+        await getDocs(reviewsQuery);
+
+    return snapshot.docs.map(
+        (document) => ({
+            id: document.id,
+            ...document.data()
+        })
+    );
+}
+
+
+// ==========================================
+// GET USER WATCHLIST
+// ==========================================
+
+async function getUserWatchlist(userId) {
+
+    if (!userId) {
+        return [];
+    }
+
+    const watchlistReference =
+        collection(
+            db,
+            "users",
+            userId,
+            "watchlist"
+        );
+
+    const snapshot =
+        await getDocs(
+            watchlistReference
+        );
+
+    return snapshot.docs.map(
+        (document) => ({
+            id: document.id,
+            ...document.data()
+        })
+    );
+}
+
+
+// ==========================================
+// GET GENRES FOR A MOVIE
+// ==========================================
+
+async function getMovieGenresForMovie(
+    movieId
+) {
+
+    try {
+
+        const movie =
+            await getMovie(movieId);
+
+        if (
+            !movie ||
+            !movie.genres
+        ) {
+            return [];
+        }
+
+        return movie.genres.map(
+            (genre) => ({
+                id: genre.id,
+                name: genre.name
+            })
+        );
+
+    } catch (error) {
+
+        console.error(
+            `Unable to retrieve genres for movie ${movieId}:`,
+            error
+        );
+
+        return [];
+    }
+}
+
+
+// ==========================================
+// BUILD GENRE PREFERENCES
+// ==========================================
+
+async function buildGenrePreferences(
+    reviews
+) {
+
+    const genreScores = {};
+
+    for (const review of reviews) {
+
+        const rating =
+            Number(review.rating);
+
+        const genres =
+            await getMovieGenresForMovie(
+                review.movieId
+            );
+
+        if (!genres.length) {
+            continue;
+        }
+
+        let ratingWeight = 0;
+
+        if (rating >= 4) {
+
+            ratingWeight = rating;
+
+        } else if (rating <= 2) {
+
+            ratingWeight = -rating;
+        }
+
+        for (const genre of genres) {
+
+            if (
+                !genreScores[genre.name]
+            ) {
+                genreScores[genre.name] = 0;
+            }
+
+            genreScores[genre.name] +=
+                ratingWeight;
+        }
+    }
+
+    return genreScores;
+}
+
+
+// ==========================================
+// SCORE A MOVIE
+// ==========================================
+
+function calculateMovieScore(
+    movie,
+    genreScores,
+    genreMap
+) {
+
+    let score = 0;
+
+
+    // --------------------------------------
+    // Genre preference
+    // --------------------------------------
+
+    if (
+        Array.isArray(movie.genre_ids)
+    ) {
+
+        for (
+            const genreId
+            of movie.genre_ids
+            ) {
+
+            const genreName =
+                genreMap[genreId];
+
+            if (
+                genreName &&
+                genreScores[genreName]
+            ) {
+
+                score +=
+                    genreScores[genreName];
+            }
+        }
+    }
+
+
+    // --------------------------------------
+    // TMDB rating
+    // --------------------------------------
+
+    if (
+        typeof movie.vote_average ===
+        "number"
+    ) {
+
+        score +=
+            movie.vote_average / 2;
+    }
+
+
+    // --------------------------------------
+    // TMDB popularity
+    // --------------------------------------
+
+    if (
+        typeof movie.popularity ===
+        "number"
+    ) {
+
+        score += Math.min(
+            movie.popularity / 20,
+            5
+        );
+    }
+
+
+    return score;
+}
+
+
+// ==========================================
+// GET PERSONALIZED RECOMMENDATIONS
+// ==========================================
+
+export async function getRecommendations(
+    userId
+) {
+
+    if (!userId) {
+        return [];
+    }
+
+    try {
+
+        // ----------------------------------
+        // Load user's activity
+        // ----------------------------------
+
+        const reviews =
+            await getUserReviews(
+                userId
+            );
+
+        const watchlist =
+            await getUserWatchlist(
+                userId
+            );
+
+
+        // ----------------------------------
+        // Get popular movies
+        // ----------------------------------
+
+        const popularResponse =
+            await getPopularMovies();
+
+        const popularMovies =
+            popularResponse?.results ||
+            [];
+
+
+        // ----------------------------------
+        // Get official TMDB genres
+        // ----------------------------------
+
+        const genreResponse =
+            await getMovieGenres();
+
+        const genreMap = {};
+
+        if (
+            Array.isArray(
+                genreResponse?.genres
+            )
+        ) {
+
+            genreResponse.genres.forEach(
+                (genre) => {
+
+                    genreMap[genre.id] =
+                        genre.name;
+                }
+            );
+        }
+
+
+        // ----------------------------------
+        // Build user preferences
+        // ----------------------------------
+
+        const genreScores =
+            await buildGenrePreferences(
+                reviews
+            );
+
+
+        console.log(
+            "User genre preferences:",
+            genreScores
+        );
+
+
+        // ----------------------------------
+        // Movies already reviewed
+        // ----------------------------------
+
+        const reviewedMovieIds =
+            new Set(
+                reviews.map(
+                    (review) =>
+                        String(
+                            review.movieId
+                        )
+                )
+            );
+
+
+        // ----------------------------------
+        // Movies already watchlisted
+        // ----------------------------------
+
+        const watchlistMovieIds =
+            new Set(
+                watchlist.map(
+                    (movie) =>
+                        String(
+                            movie.movieId
+                        )
+                )
+            );
+
+
+        // ----------------------------------
+        // Remove movies already seen
+        // ----------------------------------
+
+        const candidates =
+            popularMovies.filter(
+                (movie) => {
+
+                    const movieId =
+                        String(movie.id);
+
+                    return (
+                        !reviewedMovieIds.has(
+                            movieId
+                        ) &&
+                        !watchlistMovieIds.has(
+                            movieId
+                        )
+                    );
+                }
+            );
+
+
+        // ----------------------------------
+        // Score movies
+        // ----------------------------------
+
+        const scoredMovies =
+            candidates.map(
+                (movie) => {
+
+                    const score =
+                        calculateMovieScore(
+                            movie,
+                            genreScores,
+                            genreMap
+                        );
+
+                    return {
+                        ...movie,
+                        recommendationScore:
+                        score
+                    };
+                }
+            );
+
+
+        // ----------------------------------
+        // Highest score first
+        // ----------------------------------
+
+        scoredMovies.sort(
+            (a, b) =>
+                b.recommendationScore -
+                a.recommendationScore
+        );
+
+
+        // ----------------------------------
+        // Return top 10
+        // ----------------------------------
+
+        return scoredMovies.slice(
+            0,
+            10
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error generating recommendations:",
+            error
+        );
+
+        throw error;
+    }
+}

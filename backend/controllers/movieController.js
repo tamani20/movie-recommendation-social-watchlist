@@ -70,8 +70,33 @@ async function getPopularMovies(req, res) {
     }
 }
 
+async function getMovieGenres(req, res) {
+
+    try {
+
+        const genres =
+            await tmdbService.getMovieGenres();
+
+        res.json(genres);
+
+    } catch (error) {
+
+        console.error(
+            "Movie genres error:",
+            error.response?.data ||
+            error.message
+        );
+
+        res.status(500).json({
+            error:
+                "Unable to retrieve movie genres."
+        });
+    }
+}
+
 module.exports = {
     searchMovies,
     getMovie,
-    getPopularMovies
+    getPopularMovies,
+    getMovieGenres
 };
