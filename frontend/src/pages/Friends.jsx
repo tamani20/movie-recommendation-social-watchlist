@@ -87,8 +87,25 @@ function Friends() {
                     currentUser.uid
                 );
 
+            const requestsWithProfiles =
+                await Promise.all(
+                    requestsData.map(
+                        async (request) => {
+                            const senderProfile =
+                                await getUserProfile(
+                                    request.senderId
+                                );
+
+                            return {
+                                ...request,
+                                senderProfile
+                            };
+                        }
+                    )
+                );
+
             setRequests(
-                requestsData
+                requestsWithProfiles
             );
 
         } catch (error) {
@@ -188,7 +205,7 @@ function Friends() {
             console.error(error);
 
             setError(
-                "Unable to accept request."
+                "Unable to accept friend request."
             );
         }
     }
@@ -338,10 +355,8 @@ function Friends() {
                                 }
                             >
                                 <p>
-                                    User ID:{" "}
-                                    {
-                                        request.senderId
-                                    }
+                                    {request.senderProfile?.displayName ||
+                                        "Unknown User"}
                                 </p>
 
                                 <button
