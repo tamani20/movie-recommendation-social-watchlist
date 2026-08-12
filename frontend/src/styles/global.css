@@ -809,7 +809,7 @@ hr {
             linear-gradient(
                     135deg,
                     #111827,
-                    #1e3a8a
+                    #1e3af1
             );
 
     border-radius: 18px;
@@ -1453,6 +1453,276 @@ hr {
     .auth-header h1 {
         font-size:
                 1.7rem;
+    }
+
+}
+
+/* ==========================================
+   WATCHLIST PAGE
+========================================== */
+
+.watchlist-page {
+    padding-top: 45px;
+}
+
+
+/* ==========================================
+   WATCHLIST HEADER
+========================================== */
+
+.watchlist-header {
+    margin-bottom: 36px;
+}
+
+.watchlist-eyebrow {
+    margin: 0 0 8px;
+
+    color: #2563eb;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.watchlist-header h1 {
+    margin-bottom: 10px;
+
+    font-size: 2.5rem;
+}
+
+.watchlist-header p:last-child {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 1.05rem;
+}
+
+
+/* ==========================================
+   WATCHLIST SECTION HEADER
+========================================== */
+
+.watchlist-section-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.watchlist-section-heading h2 {
+    margin: 0;
+}
+
+.watchlist-section-heading span {
+    color: #6b7280;
+
+    font-size: 0.9rem;
+}
+
+
+/* ==========================================
+   WATCHLIST GRID
+========================================== */
+
+.watchlist-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(190px, 1fr)
+        );
+
+    gap: 24px;
+}
+
+
+/* ==========================================
+   WATCHLIST CARD
+========================================== */
+
+.watchlist-card {
+    overflow: hidden;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.08);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.watchlist-card:hover {
+    transform:
+            translateY(-4px);
+
+    box-shadow:
+            0 8px 20px
+            rgba(0, 0, 0, 0.12);
+}
+
+.watchlist-card img {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* ==========================================
+   WATCHLIST PLACEHOLDER
+========================================== */
+
+.watchlist-placeholder {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e5e7eb;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+
+/* ==========================================
+   WATCHLIST CARD CONTENT
+========================================== */
+
+.watchlist-card-content {
+    padding: 16px;
+}
+
+.watchlist-card-content h3 {
+    margin:
+            0 0 8px;
+
+    font-size: 1rem;
+}
+
+.watchlist-card-content p {
+    margin:
+            0 0 14px;
+
+    color: #6b7280;
+
+    font-size: 0.9rem;
+}
+
+
+/* ==========================================
+   REMOVE BUTTON
+========================================== */
+
+.watchlist-remove {
+    width: 100%;
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    border:
+            1px solid #d1d5db;
+}
+
+.watchlist-remove:hover {
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+/* ==========================================
+   EMPTY WATCHLIST
+========================================== */
+
+.watchlist-empty {
+    max-width: 600px;
+
+    margin:
+            40px auto;
+
+    padding:
+            60px 30px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    text-align: center;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.06);
+}
+
+.watchlist-empty-icon {
+    font-size: 3rem;
+
+    margin-bottom: 16px;
+}
+
+.watchlist-empty h2 {
+    margin:
+            0 0 10px;
+}
+
+.watchlist-empty p {
+    margin: 0;
+
+    color: #6b7280;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   WATCHLIST RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .watchlist-header h1 {
+        font-size: 2rem;
+    }
+
+    .watchlist-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 16px;
+    }
+
+}
+
+@media (max-width: 560px) {
+
+    .watchlist-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../context/AuthContext";
+
 import {
     getWatchlist,
     removeFromWatchlist
@@ -18,18 +19,23 @@ function Watchlist() {
 
     async function loadWatchlist() {
         try {
+            setLoading(true);
+            setError("");
+
             const data =
                 await getWatchlist(
                     currentUser.uid
                 );
 
             setMovies(data);
+
         } catch (error) {
             console.error(error);
 
             setError(
                 "Unable to load your watchlist."
             );
+
         } finally {
             setLoading(false);
         }
@@ -42,7 +48,18 @@ function Watchlist() {
     }, [currentUser]);
 
     async function handleRemove(movieId) {
+
+        const confirmed =
+            window.confirm(
+                "Remove this movie from your watchlist?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
         try {
+
             await removeFromWatchlist(
                 currentUser.uid,
                 movieId
@@ -55,6 +72,7 @@ function Watchlist() {
                         String(movieId)
                 )
             );
+
         } catch (error) {
             console.error(error);
 
@@ -66,57 +84,162 @@ function Watchlist() {
 
     if (loading) {
         return (
-            <main>
-                <p>Loading watchlist...</p>
+            <main className="watchlist-page">
+
+                <div className="page-message">
+                    <p>
+                        Loading your watchlist...
+                    </p>
+                </div>
+
             </main>
         );
     }
 
     return (
-        <main>
-            <h1>My Watchlist</h1>
+        <main className="watchlist-page">
+
+            {/* =========================
+                HEADER
+            ========================== */}
+
+            <section className="watchlist-header">
+
+                <p className="watchlist-eyebrow">
+                    YOUR LIBRARY
+                </p>
+
+                <h1>My Watchlist</h1>
+
+                <p>
+                    Keep track of the movies
+                    you want to watch.
+                </p>
+
+            </section>
+
+
+            {/* =========================
+                ERROR
+            ========================== */}
 
             {error && (
-                <p>{error}</p>
+                <div className="error-message">
+                    {error}
+                </div>
             )}
 
-            {movies.length === 0 ? (
-                <p>
-                    Your watchlist is empty.
-                </p>
-            ) : (
+
+            {/* =========================
+                EMPTY STATE
+            ========================== */}
+
+            {!error &&
+                movies.length === 0 && (
+
+                    <section className="watchlist-empty">
+
+                        <div className="watchlist-empty-icon">
+                            🎬
+                        </div>
+
+                        <h2>
+                            Your watchlist is empty
+                        </h2>
+
+                        <p>
+                            Browse movies and add
+                            something you want to
+                            watch later.
+                        </p>
+
+                    </section>
+                )}
+
+
+            {/* =========================
+                MOVIES
+            ========================== */}
+
+            {movies.length > 0 && (
+
                 <section>
-                    {movies.map((movie) => (
-                        <article key={movie.id}>
-                            {movie.posterPath && (
-                                <img
-                                    src={`${IMAGE_BASE_URL}${movie.posterPath}`}
-                                    alt={`${movie.title} poster`}
-                                    width="200"
-                                />
-                            )}
 
-                            <h2>
-                                {movie.title}
-                            </h2>
+                    <div className="watchlist-section-heading">
 
-                            <p>
-                                {movie.releaseDate}
-                            </p>
+                        <h2>
+                            Saved Movies
+                        </h2>
 
-                            <button
-                                onClick={() =>
-                                    handleRemove(
-                                        movie.id
-                                    )
-                                }
+                        <span>
+                            {movies.length}{" "}
+                            {movies.length === 1
+                                ? "movie"
+                                : "movies"}
+                        </span>
+
+                    </div>
+
+
+                    <div className="watchlist-grid">
+
+                        {movies.map((movie) => (
+
+                            <article
+                                className="watchlist-card"
+                                key={movie.id}
                             >
-                                Remove
-                            </button>
-                        </article>
-                    ))}
+
+                                {movie.posterPath ? (
+
+                                    <img
+                                        src={`${IMAGE_BASE_URL}${movie.posterPath}`}
+                                        alt={`${movie.title} poster`}
+                                    />
+
+                                ) : (
+
+                                    <div className="watchlist-placeholder">
+                                        No poster available
+                                    </div>
+
+                                )}
+
+
+                                <div className="watchlist-card-content">
+
+                                    <h3>
+                                        {movie.title}
+                                    </h3>
+
+                                    {movie.releaseDate && (
+                                        <p>
+                                            {movie.releaseDate}
+                                        </p>
+                                    )}
+
+                                    <button
+                                        className="watchlist-remove"
+                                        onClick={() =>
+                                            handleRemove(
+                                                movie.id
+                                            )
+                                        }
+                                    >
+                                        Remove
+                                    </button>
+
+                                </div>
+
+                            </article>
+
+                        ))}
+
+                    </div>
+
                 </section>
             )}
+
         </main>
     );
 }
