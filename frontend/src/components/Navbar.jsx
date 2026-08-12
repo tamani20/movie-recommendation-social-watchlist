@@ -1,85 +1,129 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
 
+
 function Navbar() {
-    const { currentUser, logout } = useAuth();
-    const navigate = useNavigate();
+
+    const {
+        currentUser,
+        logout
+    } = useAuth();
+
 
     async function handleLogout() {
+
         try {
+
             await logout();
-            navigate("/login");
+
         } catch (error) {
+
             console.error(
-                "Error logging out:",
+                "Logout failed:",
                 error
             );
+
         }
     }
 
+
     return (
-        <nav>
-            <div>
-                <Link to="/">
-                    MovieSocial
+
+        <nav className="navbar">
+
+            <div className="navbar-container">
+
+                {/* =========================
+                    BRAND
+                ========================== */}
+
+                <Link
+                    to="/"
+                    className="navbar-brand"
+                >
+                    🎬 MovieWatchlist
                 </Link>
-            </div>
 
-            <div>
-                <Link to="/">
-                    Home
-                </Link>
 
-                <Link to="/movies">
-                    Movies
-                </Link>
+                {/* =========================
+                    NAVIGATION
+                ========================== */}
 
-                {currentUser && (
-                    <>
-                        <Link to="/dashboard">
-                            Dashboard
-                        </Link>
+                <div className="navbar-links">
 
-                        <Link to="/watchlist">
-                            Watchlist
-                        </Link>
+                    <Link to="/">
+                        Home
+                    </Link>
 
-                        <Link to="/friends">
-                            Friends
-                        </Link>
-                    </>
-                )}
-            </div>
+                    <Link to="/movies">
+                        Movies
+                    </Link>
 
-            <div>
-                {currentUser ? (
-                    <>
-                        <span>
-                            {currentUser.email}
-                        </span>
+
+                    {currentUser && (
+                        <>
+                            <Link to="/dashboard">
+                                Dashboard
+                            </Link>
+
+                            <Link to="/watchlist">
+                                Watchlist
+                            </Link>
+
+                            <Link to="/friends">
+                                Friends
+                            </Link>
+                        </>
+                    )}
+
+                </div>
+
+
+                {/* =========================
+                    AUTH LINKS
+                ========================== */}
+
+                <div className="navbar-auth">
+
+                    {currentUser ? (
 
                         <button
+                            className="navbar-logout"
                             onClick={
                                 handleLogout
                             }
                         >
                             Logout
                         </button>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login">
-                            Login
-                        </Link>
 
-                        <Link to="/register">
-                            Register
-                        </Link>
-                    </>
-                )}
+                    ) : (
+
+                        <>
+                            <Link
+                                to="/login"
+                                className="navbar-login"
+                            >
+                                Login
+                            </Link>
+
+                            <Link
+                                to="/register"
+                                className="navbar-register"
+                            >
+                                Register
+                            </Link>
+                        </>
+
+                    )}
+
+                </div>
+
             </div>
+
         </nav>
     );
 }
+
 
 export default Navbar;
