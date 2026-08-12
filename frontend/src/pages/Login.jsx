@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
+
 import { auth } from "../services/firebase";
 
 function Login() {
@@ -24,55 +25,89 @@ function Login() {
 
             navigate("/dashboard");
         } catch (error) {
-            setError("Invalid email or password.");
+            console.error(error);
+
+            setError(
+                "Invalid email or password."
+            );
         }
     }
 
     return (
-        <main>
-            <h1>Login</h1>
+        <main className="auth-page">
+            <div className="auth-card">
 
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label htmlFor="email">
-                        Email
-                    </label>
+                <div className="auth-header">
+                    <h1>Welcome Back</h1>
 
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) =>
-                            setEmail(event.target.value)
-                        }
-                        required
-                    />
+                    <p>
+                        Log in to your Movie Recommendations
+                        & Social Watchlist account.
+                    </p>
                 </div>
 
-                <div>
-                    <label htmlFor="password">
-                        Password
-                    </label>
+                <form
+                    className="auth-form"
+                    onSubmit={handleLogin}
+                >
+                    <div className="form-group">
+                        <label htmlFor="email">
+                            Email
+                        </label>
 
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) =>
-                            setPassword(event.target.value)
-                        }
-                        required
-                    />
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(event.target.value)
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">
+                            Password
+                        </label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="error-message">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        className="auth-button"
+                        type="submit"
+                    >
+                        Login
+                    </button>
+                </form>
+
+                <div className="auth-footer">
+                    <p>
+                        Don't have an account?{" "}
+                        <Link to="/register">
+                            Create one
+                        </Link>
+                    </p>
                 </div>
 
-                <button type="submit">
-                    Login
-                </button>
-            </form>
-
-            {error && (
-                <p>{error}</p>
-            )}
+            </div>
         </main>
     );
 }

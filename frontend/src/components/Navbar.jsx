@@ -2,34 +2,24 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
-
 function Navbar() {
-
     const {
         currentUser,
         logout
     } = useAuth();
 
-
     async function handleLogout() {
-
         try {
-
             await logout();
-
         } catch (error) {
-
             console.error(
                 "Logout failed:",
                 error
             );
-
         }
     }
 
-
     return (
-
         <nav className="navbar">
 
             <div className="navbar-container">
@@ -42,7 +32,16 @@ function Navbar() {
                     to="/"
                     className="navbar-brand"
                 >
-                    🎬 Movie Recommendations & Social Watchlist
+                    <span className="navbar-brand-icon">
+                        🎬
+                    </span>
+
+                    <span className="navbar-brand-text">
+                        Movie Recommendations
+                        <span className="navbar-brand-subtitle">
+                            & Social Watchlist
+                        </span>
+                    </span>
                 </Link>
 
 
@@ -59,7 +58,6 @@ function Navbar() {
                     <Link to="/movies">
                         Movies
                     </Link>
-
 
                     {currentUser && (
                         <>
@@ -90,9 +88,7 @@ function Navbar() {
 
                         <button
                             className="navbar-logout"
-                            onClick={
-                                handleLogout
-                            }
+                            onClick={handleLogout}
                         >
                             Logout
                         </button>
@@ -114,7 +110,6 @@ function Navbar() {
                                 Register
                             </Link>
                         </>
-
                     )}
 
                 </div>
@@ -124,6 +119,5 @@ function Navbar() {
         </nav>
     );
 }
-
 
 export default Navbar;
