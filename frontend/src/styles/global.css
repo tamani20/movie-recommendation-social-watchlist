@@ -1726,3 +1726,424 @@ hr {
     }
 
 }
+
+/* ==========================================
+   FRIENDS PAGE
+========================================== */
+
+.friends-page {
+    padding-top: 45px;
+}
+
+.friends-header {
+    margin-bottom: 36px;
+}
+
+.friends-eyebrow {
+    margin: 0 0 8px;
+
+    color: #2563eb;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.friends-header h1 {
+    margin-bottom: 10px;
+
+    font-size: 2.5rem;
+}
+
+.friends-header > p:last-child {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 1.05rem;
+}
+
+
+/* ==========================================
+   FRIENDS SECTIONS
+========================================== */
+
+.friends-section {
+    margin-bottom: 32px;
+
+    padding: 28px;
+
+    background: white;
+
+    border-radius: 14px;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.06);
+}
+
+.friends-section-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.friends-section-header h2 {
+    margin: 0 0 6px;
+}
+
+.friends-section-header p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 0.95rem;
+}
+
+.friends-count {
+    min-width: 30px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   FRIEND SEARCH
+========================================== */
+
+.friends-search-form {
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 16px;
+}
+
+.friends-search-form input {
+    max-width: none;
+
+    flex: 1;
+}
+
+.friends-status {
+    margin:
+            12px 0;
+
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   USER GRID
+========================================== */
+
+.friends-user-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(240px, 1fr)
+        );
+
+    gap: 16px;
+
+    margin-top: 20px;
+}
+
+
+/* ==========================================
+   USER CARDS
+========================================== */
+
+.friend-user-card,
+.friend-profile-card {
+    padding: 20px;
+
+    background: #f9fafb;
+
+    border:
+            1px solid #e5e7eb;
+
+    border-radius: 12px;
+}
+
+.friend-user-card {
+    display: grid;
+
+    grid-template-columns:
+        auto 1fr;
+
+    gap: 14px;
+
+    align-items: center;
+}
+
+.friend-user-card button {
+    grid-column: 1 / -1;
+
+    width: 100%;
+}
+
+.friend-user-info h3,
+.friend-profile-card h3 {
+    margin:
+            0 0 5px;
+
+    font-size: 1rem;
+}
+
+.friend-user-info p,
+.friend-profile-card p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 0.85rem;
+
+    word-break: break-word;
+}
+
+
+/* ==========================================
+   AVATAR
+========================================== */
+
+.friend-avatar {
+    width: 46px;
+
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    font-size: 1.1rem;
+
+    font-weight: 700;
+}
+
+.friend-avatar.large {
+    width: 60px;
+
+    height: 60px;
+
+    margin-bottom: 14px;
+
+    font-size: 1.4rem;
+}
+
+
+/* ==========================================
+   FRIEND REQUEST LIST
+========================================== */
+
+.friend-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.friend-list-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 16px;
+
+    background: #f9fafb;
+
+    border:
+            1px solid #e5e7eb;
+
+    border-radius: 12px;
+}
+
+.friend-list-info {
+    flex: 1;
+}
+
+.friend-list-info h3 {
+    margin:
+            0 0 4px;
+
+    font-size: 1rem;
+}
+
+.friend-list-info p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 0.85rem;
+}
+
+
+/* ==========================================
+   FRIEND ACTIONS
+========================================== */
+
+.friend-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.friend-reject {
+    background: #f3f4f6;
+
+    color: #374151;
+
+    border:
+            1px solid #d1d5db;
+}
+
+.friend-reject:hover {
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+.friend-remove {
+    width: 100%;
+
+    margin-top: 18px;
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    border:
+            1px solid #d1d5db;
+}
+
+.friend-remove:hover {
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+/* ==========================================
+   FRIEND PROFILE CARD
+========================================== */
+
+.friend-profile-card {
+    text-align: center;
+}
+
+.friend-profile-card .friend-avatar {
+    margin-left: auto;
+
+    margin-right: auto;
+}
+
+
+/* ==========================================
+   EMPTY STATES
+========================================== */
+
+.friends-empty {
+    padding: 30px;
+
+    background: #f9fafb;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    color: #6b7280;
+}
+
+.friends-empty p {
+    margin: 0;
+}
+
+
+/* ==========================================
+   FRIENDS RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+
+    .friends-header h1 {
+        font-size: 2rem;
+    }
+
+    .friends-section {
+        padding: 20px;
+    }
+
+    .friends-search-form {
+        flex-direction: column;
+    }
+
+    .friends-search-form button {
+        width: 100%;
+    }
+
+    .friend-list-card {
+        align-items: flex-start;
+
+        flex-wrap: wrap;
+    }
+
+    .friend-list-info {
+        min-width: 150px;
+    }
+
+    .friend-actions {
+        width: 100%;
+    }
+
+    .friend-actions button {
+        flex: 1;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .friends-user-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

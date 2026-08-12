@@ -34,36 +34,22 @@ function Friends() {
     async function loadSocialData() {
         try {
             setLoading(true);
+            setError("");
 
             const friendsData =
                 await getFriends(
                     currentUser.uid
                 );
 
-            console.log(
-                "Friends from Firestore:",
-                friendsData
-            );
-
             const friendsWithProfiles =
                 await Promise.all(
                     friendsData.map(
                         async (friend) => {
 
-                            console.log(
-                                "Friend ID being looked up:",
-                                friend.friendId
-                            );
-
                             const profile =
                                 await getUserProfile(
                                     friend.friendId
                                 );
-
-                            console.log(
-                                "Profile returned:",
-                                profile
-                            );
 
                             return {
                                 ...friend,
@@ -72,11 +58,6 @@ function Friends() {
                         }
                     )
                 );
-
-            console.log(
-                "Friends with profiles:",
-                friendsWithProfiles
-            );
 
             setFriends(
                 friendsWithProfiles
@@ -91,6 +72,7 @@ function Friends() {
                 await Promise.all(
                     requestsData.map(
                         async (request) => {
+
                             const senderProfile =
                                 await getUserProfile(
                                     request.senderId
@@ -114,6 +96,7 @@ function Friends() {
             setError(
                 "Unable to load social information."
             );
+
         } finally {
             setLoading(false);
         }
@@ -146,6 +129,7 @@ function Friends() {
         setSearchResults([]);
 
         try {
+
             const results =
                 await searchUsers(
                     currentUser.uid,
@@ -159,12 +143,14 @@ function Friends() {
                     "No users found."
                 );
             }
+
         } catch (error) {
             console.error(error);
 
             setSearchMessage(
                 "Unable to search for users."
             );
+
         } finally {
             setSearchLoading(false);
         }
@@ -174,6 +160,7 @@ function Friends() {
         receiverId
     ) {
         try {
+
             await sendFriendRequest(
                 currentUser.uid,
                 receiverId
@@ -182,6 +169,7 @@ function Friends() {
             setSearchMessage(
                 "Friend request sent!"
             );
+
         } catch (error) {
             console.error(error);
 
@@ -194,6 +182,7 @@ function Friends() {
 
     async function handleAccept(request) {
         try {
+
             await acceptFriendRequest(
                 request.id,
                 request.senderId,
@@ -201,6 +190,7 @@ function Friends() {
             );
 
             await loadSocialData();
+
         } catch (error) {
             console.error(error);
 
@@ -212,11 +202,13 @@ function Friends() {
 
     async function handleReject(request) {
         try {
+
             await rejectFriendRequest(
                 request.id
             );
 
             await loadSocialData();
+
         } catch (error) {
             console.error(error);
 
@@ -239,6 +231,7 @@ function Friends() {
         }
 
         try {
+
             await removeFriend(
                 friendshipId
             );
@@ -246,10 +239,7 @@ function Friends() {
             await loadSocialData();
 
         } catch (error) {
-            console.error(
-                "Error removing friend:",
-                error
-            );
+            console.error(error);
 
             setError(
                 "Unable to remove friend."
@@ -259,25 +249,73 @@ function Friends() {
 
     if (loading) {
         return (
-            <main>
-                <p>Loading friends...</p>
+            <main className="friends-page">
+
+                <div className="page-message">
+                    <p>
+                        Loading your friends...
+                    </p>
+                </div>
+
             </main>
         );
     }
 
     return (
-        <main>
-            <h1>Friends</h1>
+        <main className="friends-page">
+
+            {/* =========================
+                PAGE HEADER
+            ========================== */}
+
+            <section className="friends-header">
+
+                <p className="friends-eyebrow">
+                    SOCIAL
+                </p>
+
+                <h1>Friends</h1>
+
+                <p>
+                    Find people, manage friend
+                    requests, and connect with
+                    your movie community.
+                </p>
+
+            </section>
+
 
             {error && (
-                <p>{error}</p>
+                <div className="error-message">
+                    {error}
+                </div>
             )}
 
-            {/* Find Friends */}
-            <section>
-                <h2>Find Friends</h2>
 
-                <form onSubmit={handleSearch}>
+            {/* =========================
+                FIND FRIENDS
+            ========================== */}
+
+            <section className="friends-section">
+
+                <div className="friends-section-header">
+
+                    <div>
+                        <h2>Find Friends</h2>
+
+                        <p>
+                            Search for other users
+                            by display name.
+                        </p>
+                    </div>
+
+                </div>
+
+                <form
+                    className="friends-search-form"
+                    onSubmit={handleSearch}
+                >
+
                     <input
                         type="text"
                         placeholder="Search by display name..."
@@ -292,32 +330,55 @@ function Friends() {
                     <button type="submit">
                         Search
                     </button>
+
                 </form>
 
+
                 {searchLoading && (
-                    <p>Searching...</p>
+                    <p className="friends-status">
+                        Searching...
+                    </p>
                 )}
 
                 {searchMessage && (
-                    <p>{searchMessage}</p>
+                    <p className="friends-status">
+                        {searchMessage}
+                    </p>
                 )}
 
+
                 {searchResults.length > 0 && (
-                    <div>
+
+                    <div className="friends-user-grid">
+
                         {searchResults.map(
                             (user) => (
+
                                 <article
+                                    className="friend-user-card"
                                     key={user.id}
                                 >
-                                    <h3>
-                                        {
-                                            user.displayName
-                                        }
-                                    </h3>
 
-                                    <p>
-                                        {user.email}
-                                    </p>
+                                    <div className="friend-avatar">
+                                        {user.displayName
+                                                ?.charAt(0)
+                                                .toUpperCase() ||
+                                            "?"}
+                                    </div>
+
+                                    <div className="friend-user-info">
+
+                                        <h3>
+                                            {
+                                                user.displayName
+                                            }
+                                        </h3>
+
+                                        <p>
+                                            {user.email}
+                                        </p>
+
+                                    </div>
 
                                     <button
                                         onClick={() =>
@@ -328,106 +389,228 @@ function Friends() {
                                     >
                                         Add Friend
                                     </button>
+
                                 </article>
+
                             )
                         )}
+
                     </div>
+
                 )}
+
             </section>
 
-            {/* Friend Requests */}
-            <section>
-                <h2>
-                    Friend Requests
-                </h2>
+
+            {/* =========================
+                FRIEND REQUESTS
+            ========================== */}
+
+            <section className="friends-section">
+
+                <div className="friends-section-header">
+
+                    <div>
+                        <h2>
+                            Friend Requests
+                        </h2>
+
+                        <p>
+                            People who want to
+                            connect with you.
+                        </p>
+                    </div>
+
+                    {requests.length > 0 && (
+                        <span className="friends-count">
+                            {requests.length}
+                        </span>
+                    )}
+
+                </div>
+
 
                 {requests.length === 0 ? (
-                    <p>
-                        No pending friend
-                        requests.
-                    </p>
+
+                    <div className="friends-empty">
+
+                        <p>
+                            No pending friend
+                            requests.
+                        </p>
+
+                    </div>
+
                 ) : (
-                    requests.map(
-                        (request) => (
-                            <article
-                                key={
-                                    request.id
-                                }
-                            >
-                                <p>
-                                    {request.senderProfile?.displayName ||
-                                        "Unknown User"}
-                                </p>
 
-                                <button
-                                    onClick={() =>
-                                        handleAccept(
-                                            request
-                                        )
-                                    }
-                                >
-                                    Accept
-                                </button>
+                    <div className="friend-list">
 
-                                <button
-                                    onClick={() =>
-                                        handleReject(
-                                            request
-                                        )
-                                    }
+                        {requests.map(
+                            (request) => (
+
+                                <article
+                                    className="friend-list-card"
+                                    key={request.id}
                                 >
-                                    Reject
-                                </button>
-                            </article>
-                        )
-                    )
+
+                                    <div className="friend-avatar">
+                                        {request.senderProfile
+                                                ?.displayName
+                                                ?.charAt(0)
+                                                .toUpperCase() ||
+                                            "?"}
+                                    </div>
+
+                                    <div className="friend-list-info">
+
+                                        <h3>
+                                            {
+                                                request
+                                                    .senderProfile
+                                                    ?.displayName ||
+                                                "Unknown User"
+                                            }
+                                        </h3>
+
+                                        <p>
+                                            wants to be
+                                            your friend
+                                        </p>
+
+                                    </div>
+
+                                    <div className="friend-actions">
+
+                                        <button
+                                            onClick={() =>
+                                                handleAccept(
+                                                    request
+                                                )
+                                            }
+                                        >
+                                            Accept
+                                        </button>
+
+                                        <button
+                                            className="friend-reject"
+                                            onClick={() =>
+                                                handleReject(
+                                                    request
+                                                )
+                                            }
+                                        >
+                                            Reject
+                                        </button>
+
+                                    </div>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
                 )}
+
             </section>
 
-            {/* Friends List */}
-            <section>
-                <h2>My Friends</h2>
+
+            {/* =========================
+                MY FRIENDS
+            ========================== */}
+
+            <section className="friends-section">
+
+                <div className="friends-section-header">
+
+                    <div>
+                        <h2>My Friends</h2>
+
+                        <p>
+                            People you're connected
+                            with.
+                        </p>
+                    </div>
+
+                    {friends.length > 0 && (
+                        <span className="friends-count">
+                            {friends.length}
+                        </span>
+                    )}
+
+                </div>
+
 
                 {friends.length === 0 ? (
-                    <p>
-                        You don't have any
-                        friends yet.
-                    </p>
-                ) : (
-                    friends.map(
-                        (friend) => (
-                            <article
-                                key={friend.id}
-                            >
-                                <h3>
-                                    {
-                                        friend.profile
-                                            ?.displayName ||
-                                        "Unknown User"
-                                    }
-                                </h3>
 
-                                <p>
-                                    {
-                                        friend.profile
-                                            ?.email ||
-                                        "No email available"
-                                    }
-                                </p>
-                                <button
-                                    onClick={() =>
-                                        handleRemoveFriend(
-                                            friend.id
-                                        )
-                                    }
+                    <div className="friends-empty">
+
+                        <p>
+                            You don't have any
+                            friends yet.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="friends-user-grid">
+
+                        {friends.map(
+                            (friend) => (
+
+                                <article
+                                    className="friend-profile-card"
+                                    key={friend.id}
                                 >
-                                    Remove Friend
-                                </button>
-                            </article>
-                        )
-                    )
+
+                                    <div className="friend-avatar large">
+                                        {friend.profile
+                                                ?.displayName
+                                                ?.charAt(0)
+                                                .toUpperCase() ||
+                                            "?"}
+                                    </div>
+
+                                    <h3>
+                                        {
+                                            friend.profile
+                                                ?.displayName ||
+                                            "Unknown User"
+                                        }
+                                    </h3>
+
+                                    <p>
+                                        {
+                                            friend.profile
+                                                ?.email ||
+                                            "No email available"
+                                        }
+                                    </p>
+
+                                    <button
+                                        className="friend-remove"
+                                        onClick={() =>
+                                            handleRemoveFriend(
+                                                friend.id
+                                            )
+                                        }
+                                    >
+                                        Remove Friend
+                                    </button>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
                 )}
+
             </section>
+
         </main>
     );
 }
