@@ -1,0 +1,309 @@
+/* ==========================================
+   GLOBAL RESET
+========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+    background: #f5f7fb;
+    color: #1f2937;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+
+/* ==========================================
+   PAGE CONTAINER
+========================================== */
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+
+/* ==========================================
+   HEADINGS
+========================================== */
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+}
+
+h2 {
+    margin-top: 32px;
+    margin-bottom: 16px;
+}
+
+h3 {
+    margin-bottom: 10px;
+}
+
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+
+    background: #2563eb;
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* ==========================================
+   LINKS
+========================================== */
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================
+   FORM ELEMENTS
+========================================== */
+
+input,
+textarea,
+select {
+    width: 100%;
+    max-width: 500px;
+
+    padding: 10px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+
+/* ==========================================
+   CARDS
+========================================== */
+
+.card {
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ==========================================
+   MOVIE GRID
+========================================== */
+
+.movie-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(180px, 1fr)
+        );
+
+    gap: 24px;
+
+    margin-top: 24px;
+}
+
+
+/* ==========================================
+   MOVIE CARD
+========================================== */
+
+.movie-card {
+    background: white;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.08);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.movie-card img {
+    width: 100%;
+    display: block;
+}
+
+.movie-card-content {
+    padding: 14px;
+}
+
+.movie-card-content h3 {
+    margin-top: 0;
+}
+
+
+/* ==========================================
+   REVIEW CARD
+========================================== */
+
+.review-card {
+    background: white;
+
+    border-radius: 10px;
+
+    padding: 18px;
+
+    margin-bottom: 16px;
+
+    box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.07);
+}
+
+
+/* ==========================================
+   DIVIDERS
+========================================== */
+
+hr {
+    border: none;
+
+    border-top:
+            1px solid #e5e7eb;
+
+    margin:
+            32px 0;
+}
+
+
+/* ==========================================
+   ERROR / SUCCESS MESSAGES
+========================================== */
+
+.error-message {
+    color: #b91c1c;
+
+    background: #fee2e2;
+
+    border-radius: 8px;
+
+    padding: 10px 14px;
+
+    margin: 12px 0;
+}
+
+.success-message {
+    color: #166534;
+
+    background: #dcfce7;
+
+    border-radius: 8px;
+
+    padding: 10px 14px;
+
+    margin: 12px 0;
+}
+
+
+/* ==========================================
+   RESPONSIVE DESIGN
+========================================== */
+
+@media (max-width: 768px) {
+
+    main {
+        padding:
+                24px 16px;
+    }
+
+    h1 {
+        font-size:
+                1.8rem;
+    }
+
+    .movie-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+        gap: 16px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .movie-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
