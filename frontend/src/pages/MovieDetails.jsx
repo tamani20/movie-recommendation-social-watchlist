@@ -468,278 +468,372 @@ function MovieDetails() {
 
 
     // ==========================================
-    // PAGE
-    // ==========================================
+// PAGE
+// ==========================================
 
     return (
-        <main>
+        <main className="movie-details-page">
 
             {/* =========================
-                MOVIE INFORMATION
-            ========================== */}
+            MOVIE HERO
+        ========================== */}
 
-            {posterUrl && (
-                <img
-                    src={posterUrl}
-                    alt={`${movie.title} poster`}
-                    width="300"
-                />
-            )}
+            <section className="movie-details-hero">
 
-            <h1>{movie.title}</h1>
+                <div className="movie-details-poster">
 
-            {movie.tagline && (
-                <p>
-                    <em>{movie.tagline}</em>
-                </p>
-            )}
+                    {posterUrl ? (
+                        <img
+                            src={posterUrl}
+                            alt={`${movie.title} poster`}
+                        />
+                    ) : (
+                        <div className="movie-details-poster-placeholder">
+                            No poster available
+                        </div>
+                    )}
 
-            <p>
-                Release date:{" "}
-                {movie.release_date ||
-                    "Unknown"}
-            </p>
-
-            <p>
-                Rating:{" "}
-                {movie.vote_average !==
-                undefined
-                    ? movie.vote_average.toFixed(
-                        1
-                    )
-                    : "N/A"}
-            </p>
-
-            <p>
-                Runtime:{" "}
-                {movie.runtime
-                    ? `${movie.runtime} minutes`
-                    : "N/A"}
-            </p>
+                </div>
 
 
-            {/* =========================
-                OVERVIEW
-            ========================== */}
+                <div className="movie-details-info">
 
-            <h2>Overview</h2>
+                    <h1>
+                        {movie.title}
+                    </h1>
 
-            <p>
-                {movie.overview ||
-                    "No overview available."}
-            </p>
-
-
-            {/* =========================
-                GENRES
-            ========================== */}
-
-            {movie.genres &&
-                movie.genres.length > 0 && (
-                    <>
-                        <h2>Genres</h2>
-
-                        <p>
-                            {movie.genres
-                                .map(
-                                    (genre) =>
-                                        genre.name
-                                )
-                                .join(", ")}
+                    {movie.tagline && (
+                        <p className="movie-tagline">
+                            {movie.tagline}
                         </p>
-                    </>
-                )}
+                    )}
+
+                    <div className="movie-meta">
+
+                    <span>
+                        ★{" "}
+                        {movie.vote_average !== undefined
+                            ? movie.vote_average.toFixed(1)
+                            : "N/A"}
+                    </span>
+
+                        <span>
+                        {movie.release_date || "Unknown release date"}
+                    </span>
+
+                        <span>
+                        {movie.runtime
+                            ? `${movie.runtime} min`
+                            : "Runtime unavailable"}
+                    </span>
+
+                    </div>
 
 
-            {/* =========================
-                WATCHLIST
-            ========================== */}
+                    {/* GENRES */}
 
-            <button
-                onClick={
-                    handleAddToWatchlist
-                }
-            >
-                Add to Watchlist
-            </button>
+                    {movie.genres &&
+                        movie.genres.length > 0 && (
+                            <div className="movie-genres">
 
-            {watchlistMessage && (
-                <p>
-                    {watchlistMessage}
-                </p>
-            )}
+                                {movie.genres.map(
+                                    (genre) => (
+                                        <span
+                                            key={genre.id}
+                                            className="genre-tag"
+                                        >
+                                        {genre.name}
+                                    </span>
+                                    )
+                                )}
 
-
-            {/* =========================
-                REVIEWS
-            ========================== */}
-
-            <hr />
-
-            <h2>
-                {myReview
-                    ? "Your Review"
-                    : "Your Rating & Review"}
-            </h2>
-
-            {!currentUser ? (
-                <p>
-                    Please log in to rate and
-                    review this movie.
-                </p>
-            ) : (
-                <>
-                    <label>
-                        Rating:
-                    </label>
-
-                    <br />
-
-                    <select
-                        value={rating}
-                        onChange={(event) =>
-                            setRating(
-                                Number(
-                                    event.target
-                                        .value
-                                )
-                            )
-                        }
-                    >
-                        <option value={1}>
-                            1 - Poor
-                        </option>
-
-                        <option value={2}>
-                            2 - Below Average
-                        </option>
-
-                        <option value={3}>
-                            3 - Average
-                        </option>
-
-                        <option value={4}>
-                            4 - Good
-                        </option>
-
-                        <option value={5}>
-                            5 - Excellent
-                        </option>
-                    </select>
+                            </div>
+                        )}
 
 
-                    <br />
-                    <br />
-
-                    <label>
-                        Your Review:
-                    </label>
-
-                    <br />
-
-                    <textarea
-                        value={reviewText}
-                        onChange={(event) =>
-                            setReviewText(
-                                event.target.value
-                            )
-                        }
-                        placeholder="What did you think about this movie?"
-                        rows="5"
-                        cols="50"
-                    />
-
-                    <br />
-                    <br />
+                    {/* WATCHLIST */}
 
                     <button
-                        onClick={
-                            handleSubmitReview
-                        }
-                        disabled={
-                            reviewLoading
-                        }
+                        className="movie-watchlist-button"
+                        onClick={handleAddToWatchlist}
                     >
-                        {reviewLoading
-                            ? myReview
-                                ? "Updating..."
-                                : "Submitting..."
-                            : myReview
-                                ? "Update Review"
-                                : "Submit Review"}
+                        + Add to Watchlist
                     </button>
 
-                    {myReview && (
-                        <>
-                            <br />
-                            <br />
+                    {watchlistMessage && (
+                        <p className="success-message">
+                            {watchlistMessage}
+                        </p>
+                    )}
+
+                </div>
+
+            </section>
+
+
+            {/* =========================
+            OVERVIEW
+        ========================== */}
+
+            <section className="movie-details-section">
+
+                <h2>
+                    Overview
+                </h2>
+
+                <p className="movie-overview">
+
+                    {movie.overview ||
+                        "No overview available."}
+
+                </p>
+
+            </section>
+
+
+            {/* =========================
+            REVIEW SECTION
+        ========================== */}
+
+            <section className="movie-details-section">
+
+                <h2>
+                    {myReview
+                        ? "Your Review"
+                        : "Your Rating & Review"}
+                </h2>
+
+
+                {!currentUser ? (
+
+                    <div className="login-review-message">
+
+                        <p>
+                            Please log in to rate and
+                            review this movie.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="review-form card">
+
+                        <div className="form-group">
+
+                            <label htmlFor="rating">
+                                Rating
+                            </label>
+
+                            <select
+                                id="rating"
+                                value={rating}
+                                onChange={(event) =>
+                                    setRating(
+                                        Number(
+                                            event.target.value
+                                        )
+                                    )
+                                }
+                            >
+
+                                <option value={1}>
+                                    1 - Poor
+                                </option>
+
+                                <option value={2}>
+                                    2 - Below Average
+                                </option>
+
+                                <option value={3}>
+                                    3 - Average
+                                </option>
+
+                                <option value={4}>
+                                    4 - Good
+                                </option>
+
+                                <option value={5}>
+                                    5 - Excellent
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div className="form-group">
+
+                            <label htmlFor="review">
+                                Your Review
+                            </label>
+
+                            <textarea
+                                id="review"
+                                value={reviewText}
+                                onChange={(event) =>
+                                    setReviewText(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="What did you think about this movie?"
+                                rows="6"
+                            />
+
+                        </div>
+
+
+                        <div className="review-form-actions">
 
                             <button
                                 onClick={
-                                    handleDeleteReview
+                                    handleSubmitReview
                                 }
                                 disabled={
                                     reviewLoading
                                 }
                             >
-                                Delete Review
+
+                                {reviewLoading
+                                    ? myReview
+                                        ? "Updating..."
+                                        : "Submitting..."
+                                    : myReview
+                                        ? "Update Review"
+                                        : "Submit Review"}
+
                             </button>
-                        </>
-                    )}
 
-                    {reviewError && (
-                        <p>
-                            {reviewError}
-                        </p>
-                    )}
 
-                    {reviewMessage && (
-                        <p>
-                            {reviewMessage}
-                        </p>
-                    )}
-                </>
-            )}
+                            {myReview && (
+
+                                <button
+                                    className="danger-button"
+                                    onClick={
+                                        handleDeleteReview
+                                    }
+                                    disabled={
+                                        reviewLoading
+                                    }
+                                >
+                                    Delete Review
+                                </button>
+
+                            )}
+
+                        </div>
+
+
+                        {reviewError && (
+                            <p className="error-message">
+                                {reviewError}
+                            </p>
+                        )}
+
+                        {reviewMessage && (
+                            <p className="success-message">
+                                {reviewMessage}
+                            </p>
+                        )}
+
+                    </div>
+
+                )}
+
+            </section>
 
 
             {/* =========================
-                COMMUNITY REVIEWS
-            ========================== */}
+            COMMUNITY REVIEWS
+        ========================== */}
 
-            <hr />
+            <section className="movie-details-section">
 
-            <h2>Community Reviews</h2>
+                <div className="section-heading">
 
-            {reviews.length === 0 ? (
-                <p>
-                    No reviews yet. Be the
-                    first to review this movie!
-                </p>
-            ) : (
-                reviews.map((review) => (
-                    <article
-                        key={review.id}
-                    >
-                        <h3>
-                            {review.profile?.displayName ||
-                                "Unknown User"}
-                        </h3>
+                    <div>
+
+                        <h2>
+                            Community Reviews
+                        </h2>
 
                         <p>
-                            Rating:{" "}
-                            {review.rating}/5
+                            See what other users think
+                            about this movie.
                         </p>
 
+                    </div>
+
+                </div>
+
+
+                {reviews.length === 0 ? (
+
+                    <div className="empty-state">
+
                         <p>
-                            {review.review}
+                            No reviews yet. Be the
+                            first to review this movie!
                         </p>
-                    </article>
-                ))
-            )}
+
+                    </div>
+
+                ) : (
+
+                    <div className="reviews-list">
+
+                        {reviews.map(
+                            (review) => (
+
+                                <article
+                                    key={review.id}
+                                    className="review-card"
+                                >
+
+                                    <div className="review-card-header">
+
+                                        <div>
+
+                                            <h3>
+                                                {review.profile?.displayName ||
+                                                    "Unknown User"}
+                                            </h3>
+
+                                            <p className="review-rating">
+
+                                                {"★".repeat(
+                                                    review.rating
+                                                )}
+
+                                                {"☆".repeat(
+                                                    5 -
+                                                    review.rating
+                                                )}
+
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <p className="review-text">
+                                        {review.review}
+                                    </p>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
+
+            </section>
 
         </main>
     );
-}
 
 
 export default MovieDetails;

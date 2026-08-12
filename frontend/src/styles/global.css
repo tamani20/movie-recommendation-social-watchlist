@@ -2147,3 +2147,380 @@ hr {
     }
 
 }
+
+/* ==========================================
+   MOVIE DETAILS PAGE
+========================================== */
+
+.movie-details-page {
+    max-width: 1100px;
+}
+
+
+/* ==========================================
+   MOVIE HERO
+========================================== */
+
+.movie-details-hero {
+    display: grid;
+
+    grid-template-columns:
+        280px 1fr;
+
+    gap: 40px;
+
+    padding: 32px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    box-shadow:
+            0 2px 10px rgba(0, 0, 0, 0.08);
+
+    margin-bottom: 32px;
+}
+
+
+.movie-details-poster img {
+    width: 100%;
+
+    display: block;
+
+    border-radius: 12px;
+
+    box-shadow:
+            0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+
+.movie-details-poster-placeholder {
+    aspect-ratio: 2 / 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e5e7eb;
+
+    color: #6b7280;
+
+    border-radius: 12px;
+}
+
+
+.movie-details-info {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
+.movie-details-info h1 {
+    font-size: 2.8rem;
+
+    margin:
+            0 0 12px;
+
+    color: #111827;
+}
+
+
+.movie-tagline {
+    font-size: 1.1rem;
+
+    color: #6b7280;
+
+    margin:
+            0 0 24px;
+}
+
+
+.movie-meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 18px;
+
+    margin-bottom: 20px;
+
+    color: #4b5563;
+
+    font-weight: 600;
+}
+
+
+.movie-meta span:first-child {
+    color: #d97706;
+}
+
+
+/* ==========================================
+   GENRES
+========================================== */
+
+.movie-genres {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 28px;
+}
+
+
+.genre-tag {
+    padding:
+            6px 12px;
+
+    background: #eff6ff;
+
+    color: #1d4ed8;
+
+    border-radius: 999px;
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   WATCHLIST BUTTON
+========================================== */
+
+.movie-watchlist-button {
+    width: fit-content;
+
+    padding:
+            12px 20px;
+}
+
+
+/* ==========================================
+   MOVIE SECTIONS
+========================================== */
+
+.movie-details-section {
+    margin-bottom: 40px;
+}
+
+
+.movie-details-section h2 {
+    margin:
+            0 0 16px;
+
+    font-size: 1.7rem;
+}
+
+
+.movie-overview {
+    max-width: 850px;
+
+    line-height: 1.8;
+
+    color: #4b5563;
+
+    font-size: 1.05rem;
+}
+
+
+/* ==========================================
+   REVIEW FORM
+========================================== */
+
+.review-form {
+    max-width: 800px;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    max-width: 100%;
+}
+
+
+.review-form-actions {
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-top: 8px;
+}
+
+
+.danger-button {
+    background: #dc2626;
+}
+
+
+.danger-button:hover {
+    background: #b91c1c;
+}
+
+
+/* ==========================================
+   COMMUNITY REVIEWS
+========================================== */
+
+.reviews-list {
+    max-width: 850px;
+}
+
+
+.review-card {
+    margin-bottom: 16px;
+}
+
+
+.review-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+
+.review-card-header h3 {
+    margin:
+            0 0 4px;
+}
+
+
+.review-rating {
+    margin: 0;
+
+    color: #d97706;
+
+    letter-spacing: 2px;
+
+    font-size: 0.95rem;
+}
+
+
+.review-text {
+    margin:
+            14px 0 0;
+
+    line-height: 1.7;
+
+    color: #4b5563;
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.empty-state {
+    padding: 28px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    border:
+            1px dashed #d1d5db;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+
+/* ==========================================
+   LOGIN REVIEW MESSAGE
+========================================== */
+
+.login-review-message {
+    padding: 20px;
+
+    background: #eff6ff;
+
+    border-radius: 10px;
+
+    color: #1e40af;
+
+    max-width: 800px;
+}
+
+
+/* ==========================================
+   MOVIE DETAILS RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .movie-details-hero {
+        grid-template-columns: 1fr;
+
+        gap: 28px;
+
+        padding: 24px;
+    }
+
+
+    .movie-details-poster {
+        max-width: 280px;
+
+        margin: 0 auto;
+    }
+
+
+    .movie-details-info h1 {
+        font-size: 2.2rem;
+    }
+
+
+    .movie-meta {
+        gap: 10px;
+
+        flex-direction: column;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .movie-details-hero {
+        padding: 18px;
+    }
+
+
+    .movie-details-info h1 {
+        font-size: 1.9rem;
+    }
+
+
+    .movie-details-section {
+        margin-bottom: 30px;
+    }
+
+}
