@@ -411,24 +411,80 @@ function FriendProfile() {
                 className="card friend-profile-header"
             >
 
-                <div className="friend-profile-avatar">
+                <div className="friend-profile-avatar friend-profile-avatar-emoji">
 
-                    {profile.displayName
-                        ?.charAt(0)
-                        .toUpperCase()}
+                    {profile.avatar || "🎬"}
 
                 </div>
 
 
-                <div>
+                    <div className="friend-profile-header-info">
 
-                    <h1>
-                        {profile.displayName}
-                    </h1>
+                        <h1>
+                            {profile.displayName}
+                        </h1>
 
-                    <p>
-                        Friend
-                    </p>
+
+                        <p className="friend-profile-label">
+                            Friend
+                        </p>
+
+
+                        {profile.bio ? (
+
+                            <p className="friend-profile-bio">
+                                {profile.bio}
+                            </p>
+
+                        ) : (
+
+                            <p className="friend-profile-bio friend-profile-bio-empty">
+                                This friend hasn't added a bio yet.
+                            </p>
+
+                        )}
+
+                    </div>
+
+            </section>
+
+            <section className="friend-profile-stats">
+
+                <div className="friend-profile-stat">
+
+                    <strong>
+                        {reviews.length}
+                    </strong>
+
+                    <span>
+            Reviews
+        </span>
+
+                </div>
+
+
+                <div className="friend-profile-stat">
+
+                    <strong>
+                        {plannedMovies.length}
+                    </strong>
+
+                    <span>
+            Plan to Watch
+        </span>
+
+                </div>
+
+
+                <div className="friend-profile-stat">
+
+                    <strong>
+                        {watchedMovies.length}
+                    </strong>
+
+                    <span>
+            Watched
+        </span>
 
                 </div>
 
