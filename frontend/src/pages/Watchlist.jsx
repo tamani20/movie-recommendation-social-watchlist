@@ -4,14 +4,16 @@ import { useAuth } from "../context/AuthContext";
 
 import {
     getWatchlist,
-    removeFromWatchlist
+    removeFromWatchlist,
+    markAsWatched,
+    markAsPlanned
 } from "../services/watchlistService";
 
 const IMAGE_BASE_URL =
     "https://image.tmdb.org/t/p/w500";
 
 function Watchlist() {
-    const { currentUser } = useAuth();
+    const {currentUser} = useAuth();
 
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -212,11 +214,79 @@ function Watchlist() {
                                         {movie.title}
                                     </h3>
 
+
                                     {movie.releaseDate && (
-                                        <p>
+
+                                        <p className="watchlist-release-date">
+
                                             {movie.releaseDate}
+
                                         </p>
+
                                     )}
+
+
+                                    {/* =========================
+                                        STATUS
+                                        ========================== */}
+
+                                    <div className="watchlist-status-row">
+
+                                        <span
+                                        className={
+                                        movie.status ===
+                                        "watched"
+                                            ? "watchlist-status watched"
+                                            : "watchlist-status planned"
+                                        }
+                                        >
+
+                                            {movie.status ===
+                                            "watched"
+                                                ? "✓ Watched"
+                                                : "Plan to Watch"}
+
+                                         </span>
+
+                                    </div>
+
+
+                                    {/* =========================
+                                        STATUS ACTION
+                                        ========================== */}
+
+                                    {movie.status === "watched" ? (
+
+                                        <button
+                                            className="watchlist-status-button"
+                                            onClick={() =>
+                                                handleMarkAsPlanned(
+                                                    movie.id
+                                                )
+                                            }
+                                        >
+                                            Mark as Planned
+                                        </button>
+
+                                    ) : (
+
+                                        <button
+                                            className="watchlist-status-button watched-button"
+                                            onClick={() =>
+                                                handleMarkAsWatched(
+                                                    movie.id
+                                                )
+                                            }
+                                        >
+                                            ✓ Mark as Watched
+                                        </button>
+
+                                    )}
+
+
+                                    {/* =========================
+                                        REMOVE
+                                        ========================== */}
 
                                     <button
                                         className="watchlist-remove"
@@ -242,6 +312,122 @@ function Watchlist() {
 
         </main>
     );
+
+    async function handleMarkAsWatched(
+        movieId
+    ) {
+
+        try {
+
+            setError("");
+
+            await markAsWatched(
+                currentUser.uid,
+                movieId
+            );
+
+
+            // Update local UI immediately.
+            setMovies(
+                (currentMovies) =>
+                    currentMovies.map(
+                        (movie) => {
+
+                            if (
+                                movie.id ===
+                                String(movieId)
+                            ) {
+
+                                return {
+                                    ...movie,
+                                    status:
+                                        "watched",
+                                    watchedAt:
+                                        new Date()
+                                };
+
+                            }
+
+                            return movie;
+
+                        }
+                    )
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to mark movie as watched:",
+                error
+            );
+
+
+            setError(
+                "Unable to mark movie as watched."
+            );
+
+        }
+
+    }
+
+
+    async function handleMarkAsPlanned(
+        movieId
+    ) {
+
+        try {
+
+            setError("");
+
+            await markAsPlanned(
+                currentUser.uid,
+                movieId
+            );
+
+
+            setMovies(
+                (currentMovies) =>
+                    currentMovies.map(
+                        (movie) => {
+
+                            if (
+                                movie.id ===
+                                String(movieId)
+                            ) {
+
+                                return {
+                                    ...movie,
+                                    status:
+                                        "planned",
+                                    watchedAt:
+                                        null
+                                };
+
+                            }
+
+                            return movie;
+
+                        }
+                    )
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to mark movie as planned:",
+                error
+            );
+
+
+            setError(
+                "Unable to update movie status."
+            );
+
+        }
+
+    }
 }
 
 export default Watchlist;
