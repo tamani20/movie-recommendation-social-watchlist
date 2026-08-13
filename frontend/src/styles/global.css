@@ -2524,3 +2524,29 @@ hr {
     }
 
 }
+
+.friend-profile-button {
+    display: inline-block;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    margin-right: 8px;
+}
+
+.friend-profile-button:hover {
+    background: #1d4ed8;
+
+    color: white;
+
+    text-decoration: none;
+}

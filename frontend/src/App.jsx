@@ -17,12 +17,14 @@ import Friends from "./pages/Friends";
 
 import Navbar from "./components/Navbar";
 
+import FriendProfile from "./pages/FriendProfile";
+
 function App() {
     return (
         <BrowserRouter>
 
             <Navbar />
-            
+
             <Routes>
 
                 <Route
@@ -73,6 +75,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Friends />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/friends/:id"
+                    element={
+                        <ProtectedRoute>
+                            <FriendProfile />
                         </ProtectedRoute>
                     }
                 />

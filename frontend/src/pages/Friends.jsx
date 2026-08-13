@@ -13,6 +13,8 @@ import {
     removeFriend
 } from "../services/friendService";
 
+import { Link } from "react-router-dom";
+
 function Friends() {
     const { currentUser } = useAuth();
 
@@ -588,6 +590,13 @@ function Friends() {
                                             "No email available"
                                         }
                                     </p>
+
+                                    <Link
+                                        to={`/friends/${friend.friendId}`}
+                                        className="friend-profile-button"
+                                    >
+                                        View Profile
+                                    </Link>
 
                                     <button
                                         className="friend-remove"
