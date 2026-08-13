@@ -440,38 +440,65 @@ function Dashboard() {
         <main>
 
             {/* ==========================================
-                USER INFORMATION
-            ========================================== */}
+                DASHBOARD HERO
+                ========================================== */}
 
-            <h1>
-                Dashboard
-            </h1>
+            <section className="dashboard-hero">
 
+                <div className="dashboard-hero-content">
 
-            {profile && (
-
-                <>
-
-                    <h2>
-                        Welcome,{" "}
-                        {profile.displayName}!
-                    </h2>
-
-
-                    <p>
-                        Email:{" "}
-                        {profile.email}
+                    <p className="dashboard-eyebrow">
+                        YOUR DASHBOARD
                     </p>
 
 
-                    <p>
-                        Account type:{" "}
+                    <h1>
+
+                        Welcome
+                        {profile?.displayName
+                            ? `, ${profile.displayName}`
+                            : ""}
+                        !
+
+                    </h1>
+
+
+                    <p className="dashboard-hero-description">
+
+                        Discover personalized movies,
+                        keep up with your friends, and
+                        manage your movie experience.
+
+                    </p>
+
+
+                    {profile.role && (
+
+                        <div className="dashboard-role">
+
                         {profile.role}
-                    </p>
 
-                </>
+                            {profile && (
 
-            )}
+                        <span className="dashboard-profile-meta">
+
+                <span>
+                    {profile.email}
+                </span>
+
+
+
+                    </span>
+
+                            )}
+
+                        </div>
+
+                    )}
+
+                </div>
+
+            </section>
 
 
             {/* ==========================================
