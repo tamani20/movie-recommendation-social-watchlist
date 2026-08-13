@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "firebase": "^12.17.1"
+  },
+  "name": "movie-recommendation-social-watchlist",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend",
+    "lint": "npm run lint --prefix frontend"
+  },
+  "devDependencies": {
+    "vite": "^8.2.1"
+  }
+}

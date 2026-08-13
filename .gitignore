@@ -30,6 +30,11 @@ Thumbs.db
 # VS Code
 .vscode/
 
+# Visual Studio
+.vs/
+*.suo
+*.user
+
 # Firebase service account credentials
 serviceAccountKey.json
 firebase-adminsdk-*.json

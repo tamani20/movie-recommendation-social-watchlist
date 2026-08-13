@@ -14,12 +14,16 @@ export async function createUserProfile(
 ) {
     const userRef = doc(db, "users", userId);
 
-    await setDoc(userRef, {
-        email: email,
-        displayName: displayName,
-        role: "user",
-        createdAt: serverTimestamp()
-    });
+    await setDoc(
+        userRef,
+        {
+            email: email,
+            displayName: displayName,
+            role: "user",
+            createdAt: serverTimestamp()
+        },
+        { merge: true }
+    );
 }
 
 export async function getUserProfile(userId) {
