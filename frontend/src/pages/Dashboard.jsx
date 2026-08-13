@@ -9,6 +9,15 @@ import {
 
 import { Link } from "react-router-dom";
 
+import {
+    getFriends,
+    getUserProfile as getFriendProfile
+} from "../services/friendService";
+
+import {
+    getFriendActivity
+} from "../services/activityService";
+
 
 function Dashboard() {
 
@@ -22,6 +31,15 @@ function Dashboard() {
 
     const [recommendations, setRecommendations] =
         useState([]);
+
+    const [friendActivity, setFriendActivity] =
+        useState([]);
+
+    const [activityLoading, setActivityLoading] =
+        useState(true);
+
+    const [activityError, setActivityError] =
+        useState("");
 
     const [loading, setLoading] =
         useState(true);
@@ -85,8 +103,79 @@ function Dashboard() {
                 setLoading(false);
                 setRecommendationLoading(false);
             }
-        }
 
+            // ==================================
+// LOAD FRIEND ACTIVITY
+// ==================================
+
+            try {
+
+                const friends =
+                    await getFriends(
+                        currentUser.uid
+                    );
+
+
+                const friendIds =
+                    friends.map(
+                        (friend) =>
+                            friend.friendId
+                    );
+
+
+                const activity =
+                    await getFriendActivity(
+                        friendIds
+                    );
+
+
+                // Load friend profiles so
+                // activity can display names.
+                const activityWithProfiles =
+                    await Promise.all(
+                        activity.map(
+                            async (item) => {
+
+                                const friendProfile =
+                                    await getFriendProfile(
+                                        item.userId
+                                    );
+
+                                return {
+                                    ...item,
+
+                                    friendName:
+                                        friendProfile
+                                            ?.displayName ||
+                                        "Friend"
+                                };
+
+                            }
+                        )
+                    );
+
+
+                setFriendActivity(
+                    activityWithProfiles
+                );
+
+            } catch (activityLoadError) {
+
+                console.error(
+                    "Failed to load friend activity:",
+                    activityLoadError
+                );
+
+                setFriendActivity([]);
+
+                setActivityError(
+                    "Unable to load friend activity."
+                );
+
+            } finally {
+                setActivityLoading(false);
+            }
+        }
         loadDashboard();
 
     }, [currentUser]);
@@ -284,6 +373,124 @@ function Dashboard() {
                             );
                         }
                     )}
+
+                </section>
+
+            )}
+
+
+            {/* ==================================
+    FRIEND ACTIVITY
+================================== */}
+
+            <hr />
+
+            <h2>
+                Friend Activity
+            </h2>
+
+            <p>
+                See what your friends are watching,
+                reviewing, and adding to their
+                watchlists.
+            </p>
+
+
+            {activityLoading ? (
+
+                <p>
+                    Loading friend activity...
+                </p>
+
+            ) : activityError ? (
+
+                <p>
+                    {activityError}
+                </p>
+
+            ) : friendActivity.length === 0 ? (
+
+                <p>
+                    Your friends haven't had any
+                    recent movie activity yet.
+                </p>
+
+            ) : (
+
+                <section>
+
+                    {friendActivity
+                        .slice(0, 10)
+                        .map(
+                            (activity) => (
+
+                                <article
+                                    key={`${activity.type}-${activity.id}`}
+                                    style={{
+                                        marginBottom:
+                                            "15px",
+                                        padding:
+                                            "15px",
+                                        border:
+                                            "1px solid #ccc",
+                                        borderRadius:
+                                            "8px"
+                                    }}
+                                >
+
+                                    {activity.type ===
+                                    "review" ? (
+
+                                        <>
+                                            <h3>
+                                                {activity.friendName}
+                                                {" "}
+                                                reviewed{" "}
+                                                {activity.movieTitle}
+                                            </h3>
+
+                                            <p>
+                                                ★{" "}
+                                                {activity.rating}
+                                                /5
+                                            </p>
+
+                                            <p>
+                                                {activity.review}
+                                            </p>
+
+                                            <Link
+                                                to={`/movies/${activity.movieId}`}
+                                            >
+                                                View Movie
+                                            </Link>
+                                        </>
+
+                                    ) : (
+
+                                        <>
+                                            <h3>
+                                                {activity.friendName}
+                                                {" "}
+                                                added{" "}
+                                                {activity.movieTitle}
+                                                {" "}
+                                                to their watchlist
+                                            </h3>
+
+                                            <Link
+                                                to={`/movies/${activity.movieId}`}
+                                            >
+                                                View Movie
+                                            </Link>
+                                        </>
+
+                                    )}
+
+                                </article>
+
+                            )
+                        )}
 
                 </section>
 
