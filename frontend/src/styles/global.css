@@ -3268,6 +3268,54 @@ hr {
 }
 
 /* ==========================================
+   RECOMMENDATION EXPLANATION
+========================================== */
+
+.recommendation-reason {
+    margin:
+            12px 0;
+}
+
+
+.recommendation-reason-label {
+    margin:
+            0 0 7px;
+
+    color: #6b7280;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+}
+
+
+.recommendation-genre-list {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+
+.recommendation-genre {
+    display: inline-block;
+
+    padding:
+            5px 8px;
+
+    background: #eff6ff;
+
+    color: #1d4ed8;
+
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+
+    font-weight: 600;
+}
+
+/* ==========================================
    DASHBOARD RECENT HISTORY
 ========================================== */
 

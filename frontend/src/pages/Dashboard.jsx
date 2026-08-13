@@ -703,6 +703,37 @@ function Dashboard() {
 
                                     </p>
 
+                                    {movie.recommendationGenres &&
+                                        movie.recommendationGenres.length > 0 && (
+
+                                            <div className="recommendation-reason">
+
+                                                <p className="recommendation-reason-label">
+                                                    Because you like:
+                                                </p>
+
+                                                <div className="recommendation-genre-list">
+
+                                                    {movie.recommendationGenres
+                                                        .slice(0, 3)
+                                                        .map(
+                                                            (genre) => (
+
+                                                                <span
+                                                                    key={genre}
+                                                                    className="recommendation-genre"
+                                                                >
+                                {genre}
+                            </span>
+
+                                                            )
+                                                        )}
+
+                                                </div>
+
+                                            </div>
+
+                                        )}
 
                                     <Link
                                         to={`/movies/${movie.id}`}
