@@ -2921,6 +2921,21 @@ hr {
 }
 
 /* ==========================================
+   FRIEND WATCHED HISTORY
+========================================== */
+
+.friend-watched-date {
+    margin:
+            6px 0 12px !important;
+
+    color: #166534 !important;
+
+    font-weight: 700;
+
+    font-size: 0.85rem;
+}
+
+/* ==========================================
    FRIEND ACTIVITY
 ========================================== */
 

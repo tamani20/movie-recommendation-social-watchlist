@@ -242,6 +242,78 @@ function FriendProfile() {
 
     }, [currentUser, id]);
 
+// ==========================================
+// SPLIT WATCHLIST / WATCHED HISTORY
+// ==========================================
+
+    const plannedMovies =
+        watchlist.filter(
+            (movie) =>
+                movie.status !==
+                "watched"
+        );
+
+
+    const watchedMovies =
+        watchlist
+            .filter(
+                (movie) =>
+                    movie.status ===
+                    "watched"
+            )
+            .sort(
+                (a, b) => {
+
+                    const dateA =
+                        a.watchedAt
+                            ?.toMillis
+                            ? a.watchedAt.toMillis()
+                            : 0;
+
+
+                    const dateB =
+                        b.watchedAt
+                            ?.toMillis
+                            ? b.watchedAt.toMillis()
+                            : 0;
+
+
+                    return (
+                        dateB -
+                        dateA
+                    );
+
+                }
+            );
+
+    // ==========================================
+    // FORMAT WATCHED DATE
+    // ==========================================
+
+    function formatWatchedDate(
+        watchedAt
+    ) {
+
+        if (
+            !watchedAt ||
+            !watchedAt.toDate
+        ) {
+            return "Watch date unavailable";
+        }
+
+
+        return watchedAt
+            .toDate()
+            .toLocaleDateString(
+                undefined,
+                {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric"
+                }
+            );
+
+    }
 
     // ==========================================
     // WAIT FOR AUTHENTICATION
@@ -582,6 +654,149 @@ function FriendProfile() {
                                             </p>
 
                                         )}
+
+
+                                        <Link
+                                            to={`/movies/${movie.movieId}`}
+                                        >
+                                            View Movie →
+                                        </Link>
+
+                                    </div>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
+
+            </section>
+
+            {/* ==========================================
+    WATCHED MOVIES
+========================================== */}
+
+            <section
+                className="friend-profile-section"
+            >
+
+                <div
+                    className="friend-profile-section-heading"
+                >
+
+                    <h2>
+                        Watched Movies
+                    </h2>
+
+
+                    <p>
+
+                        Movies{" "}
+                        {profile.displayName} has
+                        finished watching.
+
+                    </p>
+
+                </div>
+
+
+                {watchlistLoading ? (
+
+                    <p>
+                        Loading viewing history...
+                    </p>
+
+                ) : watchlistError ? (
+
+                    <div className="error-message">
+
+                        {watchlistError}
+
+                    </div>
+
+                ) : watchedMovies.length === 0 ? (
+
+                    <div className="card">
+
+                        <p>
+
+                            {profile.displayName}
+                            {" "}
+                            hasn't marked any movies
+                            as watched yet.
+
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div
+                        className="friend-watchlist-grid"
+                    >
+
+                        {watchedMovies.map(
+                            (movie) => (
+
+                                <article
+                                    key={movie.id}
+                                    className="friend-watchlist-card"
+                                >
+
+                                    {/* POSTER */}
+
+                                    {movie.posterPath ? (
+
+                                        <img
+                                            src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
+                                            alt={`${movie.title} poster`}
+                                        />
+
+                                    ) : (
+
+                                        <div
+                                            className="friend-watchlist-placeholder"
+                                        >
+                                            No poster available
+                                        </div>
+
+                                    )}
+
+
+                                    {/* MOVIE INFORMATION */}
+
+                                    <div
+                                        className="friend-watchlist-card-content"
+                                    >
+
+                                        <h3>
+                                            {movie.title}
+                                        </h3>
+
+
+                                        {movie.releaseDate && (
+
+                                            <p>
+
+                                                Release date:{" "}
+                                                {movie.releaseDate}
+
+                                            </p>
+
+                                        )}
+
+
+                                        <p className="friend-watched-date">
+
+                                            Watched:{" "}
+                                            {formatWatchedDate(
+                                                movie.watchedAt
+                                            )}
+
+                                        </p>
 
 
                                         <Link
