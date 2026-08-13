@@ -72,6 +72,10 @@ function Navbar() {
                             <Link to="/friends">
                                 Friends
                             </Link>
+
+                            <Link to="/activity">
+                                Activity
+                            </Link>
                         </>
                     )}
 

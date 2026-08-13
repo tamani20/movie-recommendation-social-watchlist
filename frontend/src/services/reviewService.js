@@ -288,3 +288,51 @@ export async function deleteReview(
         reviewReference
     );
 }
+
+// ==========================================
+// GET REVIEWS FROM MULTIPLE FRIENDS
+// ==========================================
+
+export async function getFriendsReviews(
+    friendIds
+) {
+    if (!friendIds || friendIds.length === 0) {
+        return [];
+    }
+
+    const reviewResults =
+        await Promise.all(
+            friendIds.map(
+                async (friendId) => {
+
+                    return await getUserReviews(
+                        friendId
+                    );
+
+                }
+            )
+        );
+
+    const combinedReviews =
+        reviewResults.flat();
+
+    combinedReviews.sort(
+        (a, b) => {
+
+            const dateA =
+                a.createdAt?.toDate
+                    ? a.createdAt.toDate()
+                    : new Date(0);
+
+            const dateB =
+                b.createdAt?.toDate
+                    ? b.createdAt.toDate()
+                    : new Date(0);
+
+            return dateB - dateA;
+
+        }
+    );
+
+    return combinedReviews;
+}

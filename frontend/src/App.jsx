@@ -19,6 +19,8 @@ import Navbar from "./components/Navbar";
 
 import FriendProfile from "./pages/FriendProfile";
 
+import FriendActivity from "./pages/FriendActivity";
+
 function App() {
     return (
         <BrowserRouter>
@@ -84,6 +86,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <FriendProfile />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/activity"
+                    element={
+                        <ProtectedRoute>
+                            <FriendActivity />
                         </ProtectedRoute>
                     }
                 />
