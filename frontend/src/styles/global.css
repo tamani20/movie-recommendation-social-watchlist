@@ -3287,3 +3287,319 @@ hr {
     }
 
 }
+
+/* ==========================================
+   VIEWING HISTORY PAGE
+========================================== */
+
+.history-page {
+    padding-top: 45px;
+}
+
+
+/* ==========================================
+   HISTORY HEADER
+========================================== */
+
+.history-header {
+    margin-bottom: 36px;
+}
+
+
+.history-eyebrow {
+    margin: 0 0 8px;
+
+    color: #2563eb;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+
+.history-header h1 {
+    margin-bottom: 10px;
+
+    font-size: 2.5rem;
+}
+
+
+.history-header > p:last-child {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 1.05rem;
+}
+
+
+/* ==========================================
+   HISTORY SECTION HEADING
+========================================== */
+
+.history-section-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+
+.history-section-heading h2 {
+    margin: 0;
+}
+
+
+.history-section-heading span {
+    color: #6b7280;
+
+    font-size: 0.9rem;
+}
+
+
+/* ==========================================
+   HISTORY GRID
+========================================== */
+
+.history-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(190px, 1fr)
+        );
+
+    gap: 24px;
+}
+
+
+/* ==========================================
+   HISTORY CARD
+========================================== */
+
+.history-card {
+    overflow: hidden;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.08);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+
+.history-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 8px 20px
+            rgba(0, 0, 0, 0.12);
+}
+
+
+.history-card img {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.history-placeholder {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e5e7eb;
+
+    color: #6b7280;
+
+    text-align: center;
+
+    padding: 20px;
+}
+
+
+.history-card-content {
+    padding: 16px;
+}
+
+
+.history-card-content h3 {
+    margin:
+            0 0 8px;
+
+    font-size: 1rem;
+}
+
+
+.history-release-date {
+    margin:
+            0 0 8px;
+
+    color: #6b7280;
+
+    font-size: 0.85rem;
+}
+
+
+.history-watched-date {
+    margin:
+            0 0 12px;
+
+    color: #166534;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+}
+
+
+.history-movie-link {
+    display: inline-block;
+
+    margin-bottom: 14px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   HISTORY BUTTONS
+========================================== */
+
+.history-planned-button,
+.history-remove-button {
+    width: 100%;
+}
+
+
+.history-planned-button {
+    margin-bottom: 10px;
+
+    background: #374151;
+}
+
+
+.history-planned-button:hover {
+    background: #1f2937;
+}
+
+
+.history-remove-button {
+    background: #f3f4f6;
+
+    color: #374151;
+
+    border:
+            1px solid #d1d5db;
+}
+
+
+.history-remove-button:hover {
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+/* ==========================================
+   HISTORY EMPTY
+========================================== */
+
+.history-empty {
+    max-width: 600px;
+
+    margin:
+            40px auto;
+
+    padding:
+            60px 30px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    text-align: center;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.06);
+}
+
+
+.history-empty-icon {
+    margin-bottom: 16px;
+
+    font-size: 3rem;
+}
+
+
+.history-empty h2 {
+    margin:
+            0 0 10px;
+}
+
+
+.history-empty p {
+    margin:
+            0 0 18px;
+
+    color: #6b7280;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   HISTORY RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .history-header h1 {
+        font-size: 2rem;
+    }
+
+
+    .history-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 16px;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .history-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}

@@ -76,6 +76,10 @@ function Navbar() {
                             <Link to="/activity">
                                 Activity
                             </Link>
+
+                            <Link to="/history">
+                                History
+                            </Link>
                         </>
                     )}
 

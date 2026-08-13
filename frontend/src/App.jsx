@@ -21,6 +21,8 @@ import FriendProfile from "./pages/FriendProfile";
 
 import FriendActivity from "./pages/FriendActivity";
 
+import ViewingHistory from "./pages/ViewingHistory";
+
 function App() {
     return (
         <BrowserRouter>
@@ -68,6 +70,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Watchlist />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/history"
+                    element={
+                        <ProtectedRoute>
+                            <ViewingHistory />
                         </ProtectedRoute>
                     }
                 />
