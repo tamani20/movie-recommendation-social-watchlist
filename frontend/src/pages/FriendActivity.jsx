@@ -10,13 +10,18 @@ import {
 } from "../services/friendService";
 
 import {
-    getFriendsReviews
-} from "../services/reviewService";
+    getFriendActivity
+} from "../services/activityService";
 
 
 function FriendActivity() {
 
     const { currentUser } = useAuth();
+
+
+    // ==========================================
+    // STATE
+    // ==========================================
 
     const [activities, setActivities] =
         useState([]);
@@ -28,6 +33,102 @@ function FriendActivity() {
         useState("");
 
 
+    // ==========================================
+    // FORMAT ACTIVITY TIME
+    // ==========================================
+
+    function formatActivityTime(timestamp) {
+
+        if (
+            !timestamp ||
+            !timestamp.toDate
+        ) {
+            return "";
+        }
+
+
+        const activityDate =
+            timestamp.toDate();
+
+        const now =
+            new Date();
+
+        const difference =
+            now.getTime() -
+            activityDate.getTime();
+
+        const seconds =
+            Math.floor(
+                difference / 1000
+            );
+
+        const minutes =
+            Math.floor(
+                seconds / 60
+            );
+
+        const hours =
+            Math.floor(
+                minutes / 60
+            );
+
+        const days =
+            Math.floor(
+                hours / 24
+            );
+
+
+        if (seconds < 60) {
+            return "Just now";
+        }
+
+        if (minutes < 60) {
+
+            return `${minutes} ${
+                minutes === 1
+                    ? "minute"
+                    : "minutes"
+            } ago`;
+
+        }
+
+        if (hours < 24) {
+
+            return `${hours} ${
+                hours === 1
+                    ? "hour"
+                    : "hours"
+            } ago`;
+
+        }
+
+        if (days === 1) {
+            return "Yesterday";
+        }
+
+        if (days < 7) {
+
+            return `${days} days ago`;
+
+        }
+
+
+        return activityDate.toLocaleDateString(
+            undefined,
+            {
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // LOAD FRIEND ACTIVITY
+    // ==========================================
+
     useEffect(() => {
 
         async function loadActivity() {
@@ -35,6 +136,7 @@ function FriendActivity() {
             if (!currentUser) {
                 return;
             }
+
 
             try {
 
@@ -52,11 +154,19 @@ function FriendActivity() {
                     );
 
 
-                if (friends.length === 0) {
+                // ==========================================
+                // NO FRIENDS
+                // ==========================================
+
+                if (
+                    !friends ||
+                    friends.length === 0
+                ) {
 
                     setActivities([]);
 
                     return;
+
                 }
 
 
@@ -72,25 +182,25 @@ function FriendActivity() {
 
 
                 // ==========================================
-                // GET FRIEND REVIEWS
+                // GET ALL FRIEND ACTIVITY
                 // ==========================================
 
-                const reviews =
-                    await getFriendsReviews(
+                const activity =
+                    await getFriendActivity(
                         friendIds
                     );
 
 
                 // ==========================================
-                // GET FRIEND PROFILES
+                // LOAD FRIEND PROFILES
                 // ==========================================
 
                 const uniqueFriendIds =
                     [
                         ...new Set(
-                            reviews.map(
-                                (review) =>
-                                    review.userId
+                            activity.map(
+                                (item) =>
+                                    item.userId
                             )
                         )
                     ];
@@ -116,6 +226,10 @@ function FriendActivity() {
                     );
 
 
+                // ==========================================
+                // CREATE PROFILE MAP
+                // ==========================================
+
                 const profileMap =
                     Object.fromEntries(
                         profiles.map(
@@ -132,14 +246,14 @@ function FriendActivity() {
                 // ==========================================
 
                 const activityData =
-                    reviews.map(
-                        (review) => ({
+                    activity.map(
+                        (item) => ({
 
-                            ...review,
+                            ...item,
 
                             profile:
                                 profileMap[
-                                    review.userId
+                                    item.userId
                                     ]
 
                         })
@@ -151,16 +265,18 @@ function FriendActivity() {
                 );
 
 
-            } catch (error) {
+            } catch (activityError) {
 
                 console.error(
                     "Unable to load friend activity:",
-                    error
+                    activityError
                 );
+
 
                 setError(
                     "Unable to load friend activity."
                 );
+
 
             } finally {
 
@@ -177,6 +293,25 @@ function FriendActivity() {
 
 
     // ==========================================
+    // WAIT FOR AUTHENTICATION
+    // ==========================================
+
+    if (!currentUser) {
+
+        return (
+            <main>
+
+                <p>
+                    Loading...
+                </p>
+
+            </main>
+        );
+
+    }
+
+
+    // ==========================================
     // LOADING
     // ==========================================
 
@@ -185,9 +320,17 @@ function FriendActivity() {
         return (
             <main>
 
-                <p>
-                    Loading friend activity...
-                </p>
+                <section>
+
+                    <h1>
+                        Friend Activity
+                    </h1>
+
+                    <p>
+                        Loading friend activity...
+                    </p>
+
+                </section>
 
             </main>
         );
@@ -203,6 +346,10 @@ function FriendActivity() {
 
         <main>
 
+            {/* ==========================================
+                HEADER
+            ========================================== */}
+
             <section>
 
                 <h1>
@@ -211,11 +358,16 @@ function FriendActivity() {
 
                 <p>
                     See what your friends are
-                    watching and reviewing.
+                    watching, reviewing, and adding
+                    to their watchlists.
                 </p>
 
             </section>
 
+
+            {/* ==========================================
+                ERROR
+            ========================================== */}
 
             {error && (
 
@@ -228,6 +380,10 @@ function FriendActivity() {
             )}
 
 
+            {/* ==========================================
+                EMPTY STATE
+            ========================================== */}
+
             {!error &&
                 activities.length === 0 && (
 
@@ -238,8 +394,16 @@ function FriendActivity() {
                         </h2>
 
                         <p>
-                            Your friends haven't
-                            reviewed any movies yet.
+                            Your friends haven't had
+                            any recent movie activity
+                            yet.
+                        </p>
+
+                        <p>
+                            When they review a movie
+                            or add one to their
+                            watchlist, you'll see it
+                            here.
                         </p>
 
                     </section>
@@ -247,58 +411,190 @@ function FriendActivity() {
                 )}
 
 
+            {/* ==========================================
+                ACTIVITY LIST
+            ========================================== */}
+
             {activities.length > 0 && (
 
-                <section>
+                <section className="friend-activity-list">
 
                     {activities.map(
-                        (activity) => (
+                        (activity) => {
 
-                            <article
-                                key={activity.id}
-                                className="review-card"
-                            >
-
-                                <h3>
-
-                                    {activity.profile
-                                            ?.displayName ||
-                                        "Unknown User"}
-
-                                    {" reviewed "}
-
-                                    {activity.movieTitle}
-
-                                </h3>
+                            const friendName =
+                                activity.profile
+                                    ?.displayName ||
+                                "Friend";
 
 
-                                <p>
-
-                                    ★{" "}
-                                    {activity.rating}
-                                    /5
-
-                                </p>
+                            const timestamp =
+                                formatActivityTime(
+                                    activity.createdAt
+                                );
 
 
-                                <p>
+                            // ==================================
+                            // REVIEW ACTIVITY
+                            // ==================================
 
-                                    {activity.review}
+                            if (
+                                activity.type ===
+                                "review"
+                            ) {
 
-                                </p>
+                                return (
+
+                                    <article
+                                        key={`${activity.type}-${activity.id}`}
+                                        className="card friend-activity-card"
+                                    >
+
+                                        <div className="friend-activity-header">
+
+                                            <span
+                                                className="friend-activity-icon"
+                                                aria-hidden="true"
+                                            >
+                                                ⭐
+                                            </span>
+
+                                            <div>
+
+                                                <h3>
+                                                    {friendName}
+                                                    {" "}
+                                                    reviewed{" "}
+                                                    {activity.movieTitle}
+                                                </h3>
+
+                                                {timestamp && (
+
+                                                    <p className="friend-activity-time">
+
+                                                        {timestamp}
+
+                                                    </p>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
 
 
-                                <Link
-                                    to={`/movies/${activity.movieId}`}
-                                >
+                                        <div className="friend-activity-content">
 
-                                    View Movie →
+                                            <p className="friend-activity-rating">
 
-                                </Link>
+                                                <strong>
+                                                    ★{" "}
+                                                    {activity.rating}
+                                                    /5
+                                                </strong>
 
-                            </article>
+                                            </p>
 
-                        )
+
+                                            {activity.review && (
+
+                                                <p className="friend-activity-review">
+
+                                                    {activity.review}
+
+                                                </p>
+
+                                            )}
+
+                                        </div>
+
+
+                                        <Link
+                                            to={`/movies/${activity.movieId}`}
+                                            className="friend-activity-link"
+                                        >
+                                            View Movie →
+                                        </Link>
+
+                                    </article>
+
+                                );
+
+                            }
+
+
+                            // ==================================
+                            // WATCHLIST ACTIVITY
+                            // ==================================
+
+                            if (
+                                activity.type ===
+                                "watchlist"
+                            ) {
+
+                                return (
+
+                                    <article
+                                        key={`${activity.type}-${activity.id}`}
+                                        className="card friend-activity-card"
+                                    >
+
+                                        <div className="friend-activity-header">
+
+                                            <span
+                                                className="friend-activity-icon"
+                                                aria-hidden="true"
+                                            >
+                                                🎬
+                                            </span>
+
+                                            <div>
+
+                                                <h3>
+                                                    {friendName}
+                                                    {" "}
+                                                    added{" "}
+                                                    {activity.movieTitle}
+                                                    {" "}
+                                                    to their watchlist
+                                                </h3>
+
+                                                {timestamp && (
+
+                                                    <p className="friend-activity-time">
+
+                                                        {timestamp}
+
+                                                    </p>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <Link
+                                            to={`/movies/${activity.movieId}`}
+                                            className="friend-activity-link"
+                                        >
+                                            View Movie →
+                                        </Link>
+
+                                    </article>
+
+                                );
+
+                            }
+
+
+                            // ==================================
+                            // UNKNOWN ACTIVITY TYPE
+                            // ==================================
+
+                            return null;
+
+                        }
                     )}
 
                 </section>
@@ -308,6 +604,7 @@ function FriendActivity() {
         </main>
 
     );
+
 }
 
 
