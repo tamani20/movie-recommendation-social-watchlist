@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import {
+    createUserWithEmailAndPassword,
+    signInWithPopup
+} from "firebase/auth";
 
-import { auth } from "../services/firebase";
+import { auth, googleProvider } from "../services/firebase";
 import { createUserProfile } from "../services/userService";
 
 function Register() {
@@ -11,6 +14,7 @@ function Register() {
     const [password, setPassword] = useState("");
 
     const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const navigate = useNavigate();
 
@@ -18,6 +22,7 @@ function Register() {
         event.preventDefault();
 
         setError("");
+        setIsSubmitting(true);
 
         try {
             const userCredential =
@@ -36,122 +41,134 @@ function Register() {
             );
 
             navigate("/dashboard");
-
         } catch (error) {
             console.error(error);
+            setError(getFriendlyErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
-            setError(
-                "Unable to create account. Please check your information and try again."
+    async function handleGoogleSignUp() {
+        setError("");
+        setIsSubmitting(true);
+
+        try {
+            const userCredential = await signInWithPopup(
+                auth,
+                googleProvider
             );
+
+            const user = userCredential.user;
+
+            await createUserProfile(
+                user.uid,
+                user.email,
+                user.displayName || ""
+            );
+
+            navigate("/dashboard");
+        } catch (error) {
+            console.error(error);
+            setError(getFriendlyErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
     return (
-        <main className="auth-page">
-            <div className="auth-card">
+        <main>
+            <h1>Create an Account</h1>
 
-                <div className="auth-header">
-                    <h1>Create an Account</h1>
+            <form onSubmit={handleRegister}>
 
-                    <p>
-                        Join Movie Recommendations
-                        & Social Watchlist.
-                    </p>
+                <div>
+                    <label htmlFor="displayName">
+                        Display Name
+                    </label>
+
+                    <input
+                        id="displayName"
+                        type="text"
+                        value={displayName}
+                        onChange={(event) =>
+                            setDisplayName(event.target.value)
+                        }
+                        required
+                    />
                 </div>
 
-                <form
-                    className="auth-form"
-                    onSubmit={handleRegister}
-                >
-                    <div className="form-group">
-                        <label htmlFor="displayName">
-                            Display Name
-                        </label>
+                <div>
+                    <label htmlFor="email">
+                        Email
+                    </label>
 
-                        <input
-                            id="displayName"
-                            type="text"
-                            placeholder="Enter your display name"
-                            value={displayName}
-                            onChange={(event) =>
-                                setDisplayName(
-                                    event.target.value
-                                )
-                            }
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">
-                            Email
-                        </label>
-
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(event) =>
-                                setEmail(
-                                    event.target.value
-                                )
-                            }
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">
-                            Password
-                        </label>
-
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="Create a password"
-                            value={password}
-                            onChange={(event) =>
-                                setPassword(
-                                    event.target.value
-                                )
-                            }
-                            required
-                            minLength="6"
-                        />
-
-                        <small className="form-help">
-                            Password must be at least
-                            6 characters.
-                        </small>
-                    </div>
-
-                    {error && (
-                        <p className="error-message">
-                            {error}
-                        </p>
-                    )}
-
-                    <button
-                        className="auth-button"
-                        type="submit"
-                    >
-                        Create Account
-                    </button>
-                </form>
-
-                <div className="auth-footer">
-                    <p>
-                        Already have an account?{" "}
-                        <Link to="/login">
-                            Login
-                        </Link>
-                    </p>
+                    <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(event) =>
+                            setEmail(event.target.value)
+                        }
+                        required
+                    />
                 </div>
 
-            </div>
+                <div>
+                    <label htmlFor="password">
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(event) =>
+                            setPassword(event.target.value)
+                        }
+                        required
+                        minLength="6"
+                    />
+                </div>
+
+                <button type="submit" disabled={isSubmitting}>
+                    Create Account
+                </button>
+
+            </form>
+
+            <p>or</p>
+
+            <button
+                type="button"
+                onClick={handleGoogleSignUp}
+                disabled={isSubmitting}
+            >
+                Sign up with Google
+            </button>
+
+            {error && (
+                <p>{error}</p>
+            )}
         </main>
     );
+}
+
+function getFriendlyErrorMessage(error) {
+    switch (error.code) {
+        case "auth/email-already-in-use":
+            return "An account with this email already exists.";
+        case "auth/invalid-email":
+            return "Please enter a valid email address.";
+        case "auth/weak-password":
+            return "Password should be at least 6 characters.";
+        case "auth/popup-closed-by-user":
+            return "Google sign-up was cancelled.";
+        case "permission-denied":
+            return "Account created, but we couldn't save your profile. Check your Firestore security rules.";
+        default:
+            return `Unable to create account: ${error.message}`;
+    }
 }
 
 export default Register;

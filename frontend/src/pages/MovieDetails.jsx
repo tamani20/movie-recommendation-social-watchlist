@@ -347,8 +347,8 @@ function MovieDetails() {
     }
 
     // ==========================================
-// DELETE REVIEW
-// ==========================================
+    // DELETE REVIEW
+    // ==========================================
 
     async function handleDeleteReview() {
         if (!currentUser) {
@@ -468,15 +468,15 @@ function MovieDetails() {
 
 
     // ==========================================
-// PAGE
-// ==========================================
+    // PAGE
+    // ==========================================
 
     return (
         <main className="movie-details-page">
 
             {/* =========================
             MOVIE HERO
-        ========================== */}
+            ========================== */}
 
             <section className="movie-details-hero">
 
@@ -573,7 +573,7 @@ function MovieDetails() {
 
             {/* =========================
             OVERVIEW
-        ========================== */}
+            ========================== */}
 
             <section className="movie-details-section">
 
@@ -593,7 +593,7 @@ function MovieDetails() {
 
             {/* =========================
             REVIEW SECTION
-        ========================== */}
+            ========================== */}
 
             <section className="movie-details-section">
 
@@ -745,7 +745,7 @@ function MovieDetails() {
 
             {/* =========================
             COMMUNITY REVIEWS
-        ========================== */}
+            ========================== */}
 
             <section className="movie-details-section">
 
@@ -835,5 +835,6 @@ function MovieDetails() {
         </main>
     );
 
+}
 
 export default MovieDetails;
