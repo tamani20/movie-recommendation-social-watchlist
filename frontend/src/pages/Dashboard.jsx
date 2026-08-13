@@ -475,24 +475,24 @@ function Dashboard() {
                     {profile.role && (
 
                         <div className="dashboard-role">
+                {profile.role}
+            </div>
 
-                        {profile.role}
+                    )}
 
-                            {profile && (
+                    {profile && (
 
                         <span className="dashboard-profile-meta">
 
-                <span>
-                    {profile.email}
-                </span>
+                            {profile.email && (
 
-
-
-                    </span>
+                                <span>
+                {profile.email}
+            </span>
 
                             )}
 
-                        </div>
+                        </span>
 
                     )}
 
@@ -659,11 +659,9 @@ function Dashboard() {
 
 
                         <p>
-
                             See what your friends are
-                            reviewing and adding to
-                            their watchlists.
-
+                            watching, reviewing, and
+                            adding to their watchlists.
                         </p>
 
                     </div>
@@ -734,14 +732,13 @@ function Dashboard() {
 
                                         {/* ACTIVITY ICON */}
 
-                                        <div
-                                            className="dashboard-activity-icon"
-                                        >
+                                        <div className="dashboard-activity-icon">
 
-                                            {activity.type ===
-                                            "review"
+                                            {activity.type === "review"
                                                 ? "⭐"
-                                                : "🎬"}
+                                                : activity.type === "watched"
+                                                    ? "✅"
+                                                    : "🎬"}
 
                                         </div>
 
@@ -752,8 +749,12 @@ function Dashboard() {
                                             className="dashboard-activity-content"
                                         >
 
-                                            {activity.type ===
-                                            "review" ? (
+
+                                            {activity.type === "review" ? (
+
+                                                // ==========================================
+                                                // REVIEW ACTIVITY
+                                                // ==========================================
 
                                                 <>
 
@@ -766,9 +767,7 @@ function Dashboard() {
                                                     </h3>
 
 
-                                                    <p
-                                                        className="dashboard-activity-time"
-                                                    >
+                                                    <p className="dashboard-activity-time">
 
                                                         {formatActivityTime(
                                                             activity.createdAt
@@ -777,9 +776,7 @@ function Dashboard() {
                                                     </p>
 
 
-                                                    <p
-                                                        className="dashboard-activity-rating"
-                                                    >
+                                                    <p className="dashboard-activity-rating">
 
                                                         ★{" "}
                                                         {activity.rating}
@@ -790,9 +787,7 @@ function Dashboard() {
 
                                                     {activity.review && (
 
-                                                        <p
-                                                            className="dashboard-activity-review"
-                                                        >
+                                                        <p className="dashboard-activity-review">
 
                                                             {activity.review}
 
@@ -802,7 +797,40 @@ function Dashboard() {
 
                                                 </>
 
+
+                                            ) : activity.type === "watched" ? (
+
+                                                // ==========================================
+                                                // WATCHED ACTIVITY
+                                                // ==========================================
+
+                                                <>
+
+                                                    <h3>
+
+                                                        {activity.friendName}
+                                                        {" watched "}
+                                                        {activity.movieTitle}
+
+                                                    </h3>
+
+
+                                                    <p className="dashboard-activity-time">
+
+                                                        {formatActivityTime(
+                                                            activity.createdAt
+                                                        )}
+
+                                                    </p>
+
+                                                </>
+
+
                                             ) : (
+
+                                                // ==========================================
+                                                // WATCHLIST ACTIVITY
+                                                // ==========================================
 
                                                 <>
 
@@ -816,9 +844,7 @@ function Dashboard() {
                                                     </h3>
 
 
-                                                    <p
-                                                        className="dashboard-activity-time"
-                                                    >
+                                                    <p className="dashboard-activity-time">
 
                                                         {formatActivityTime(
                                                             activity.createdAt

@@ -400,10 +400,10 @@ function FriendActivity() {
                         </p>
 
                         <p>
-                            When they review a movie
-                            or add one to their
-                            watchlist, you'll see it
-                            here.
+                            When they review a movie,
+                            add one to their watchlist,
+                            or mark one as watched,
+                            you'll see it here.
                         </p>
 
                     </section>
@@ -558,6 +558,69 @@ function FriendActivity() {
                                                     {" "}
                                                     to their watchlist
                                                 </h3>
+
+                                                {timestamp && (
+
+                                                    <p className="friend-activity-time">
+
+                                                        {timestamp}
+
+                                                    </p>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <Link
+                                            to={`/movies/${activity.movieId}`}
+                                            className="friend-activity-link"
+                                        >
+                                            View Movie →
+                                        </Link>
+
+                                    </article>
+
+                                );
+
+                            }
+
+                            // ==================================
+// WATCHED ACTIVITY
+// ==================================
+
+                            if (
+                                activity.type ===
+                                "watched"
+                            ) {
+
+                                return (
+
+                                    <article
+                                        key={`${activity.type}-${activity.userId}-${activity.id}`}
+                                        className="card friend-activity-card"
+                                    >
+
+                                        <div className="friend-activity-header">
+
+                <span
+                    className="friend-activity-icon"
+                    aria-hidden="true"
+                >
+                    ✅
+                </span>
+
+
+                                            <div>
+
+                                                <h3>
+                                                    {friendName}
+                                                    {" watched "}
+                                                    {activity.movieTitle}
+                                                </h3>
+
 
                                                 {timestamp && (
 

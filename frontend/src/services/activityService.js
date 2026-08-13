@@ -35,6 +35,7 @@ export async function getFriendActivity(
             "reviews"
         );
 
+
     const reviewPromises =
         friendIds.map(
             async (friendId) => {
@@ -53,10 +54,12 @@ export async function getFriendActivity(
                         )
                     );
 
+
                 const snapshot =
                     await getDocs(
                         reviewsQuery
                     );
+
 
                 return snapshot.docs.map(
                     (document) => {
@@ -64,10 +67,13 @@ export async function getFriendActivity(
                         const data =
                             document.data();
 
-                        return {
-                            id: document.id,
 
-                            type: "review",
+                        return {
+                            id:
+                            document.id,
+
+                            type:
+                                "review",
 
                             userId:
                             friendId,
@@ -90,12 +96,13 @@ export async function getFriendActivity(
 
                     }
                 );
+
             }
         );
 
 
     // ==========================================
-    // LOAD WATCHLISTS
+    // LOAD WATCHLIST / WATCHED ACTIVITY
     // ==========================================
 
     const watchlistPromises =
@@ -110,80 +117,158 @@ export async function getFriendActivity(
                         "watchlist"
                     );
 
+
                 const snapshot =
                     await getDocs(
                         watchlistCollection
                     );
 
-                return snapshot.docs.map(
+
+                const activityItems = [];
+
+
+                snapshot.docs.forEach(
                     (document) => {
 
                         const data =
                             document.data();
 
-                        return {
-                            id: document.id,
 
-                            type:
-                                "watchlist",
+                        // ==================================
+                        // ADDED TO WATCHLIST EVENT
+                        // ==================================
 
-                            userId:
-                            friendId,
+                        if (data.addedAt) {
 
-                            movieId:
-                            data.movieId,
+                            activityItems.push({
 
-                            movieTitle:
-                            data.title,
+                                id:
+                                    `${document.id}-added`,
 
-                            posterPath:
-                            data.posterPath,
+                                type:
+                                    "watchlist",
 
-                            releaseDate:
-                            data.releaseDate,
+                                userId:
+                                friendId,
 
-                            createdAt:
-                            data.addedAt
-                        };
+                                movieId:
+                                data.movieId,
+
+                                movieTitle:
+                                data.title,
+
+                                posterPath:
+                                data.posterPath,
+
+                                releaseDate:
+                                data.releaseDate,
+
+                                createdAt:
+                                data.addedAt
+
+                            });
+
+                        }
+
+
+                        // ==================================
+                        // WATCHED EVENT
+                        // ==================================
+
+                        if (
+                            data.status ===
+                            "watched" &&
+                            data.watchedAt
+                        ) {
+
+                            activityItems.push({
+
+                                id:
+                                    `${document.id}-watched`,
+
+                                type:
+                                    "watched",
+
+                                userId:
+                                friendId,
+
+                                movieId:
+                                data.movieId,
+
+                                movieTitle:
+                                data.title,
+
+                                posterPath:
+                                data.posterPath,
+
+                                releaseDate:
+                                data.releaseDate,
+
+                                createdAt:
+                                data.watchedAt
+
+                            });
+
+                        }
 
                     }
                 );
+
+
+                return activityItems;
+
             }
         );
 
 
+    // ==========================================
+    // WAIT FOR ALL ACTIVITY
+    // ==========================================
+
     const [
         reviewResults,
         watchlistResults
-    ] = await Promise.all([
-        Promise.all(
-            reviewPromises
-        ),
-        Promise.all(
-            watchlistPromises
-        )
-    ]);
+    ] =
+        await Promise.all([
+
+            Promise.all(
+                reviewPromises
+            ),
+
+            Promise.all(
+                watchlistPromises
+            )
+
+        ]);
+
+
+    // ==========================================
+    // FLATTEN RESULTS
+    // ==========================================
+
+    const reviews =
+        reviewResults.flat();
+
+
+    const movieActivity =
+        watchlistResults.flat();
 
 
     // ==========================================
     // COMBINE ACTIVITY
     // ==========================================
 
-    const reviews =
-        reviewResults.flat();
-
-    const watchlist =
-        watchlistResults.flat();
-
-
     const activity = [
+
         ...reviews,
-        ...watchlist
+        ...movieActivity
+
     ];
 
-// ==========================================
-// SORT NEWEST → OLDEST
-// ==========================================
+
+    // ==========================================
+    // SORT NEWEST → OLDEST
+    // ==========================================
 
     activity.sort(
         (a, b) => {
@@ -193,35 +278,45 @@ export async function getFriendActivity(
                     ? a.createdAt.toMillis()
                     : 0;
 
+
             const dateB =
                 b.createdAt?.toMillis
                     ? b.createdAt.toMillis()
                     : 0;
 
-            return dateB - dateA;
+
+            return (
+                dateB -
+                dateA
+            );
+
         }
     );
 
 
-// ==========================================
-// REMOVE LEGACY DUPLICATE REVIEWS
-// ==========================================
+    // ==========================================
+    // REMOVE LEGACY DUPLICATE REVIEWS
+    // ==========================================
 
     const seenReviews =
         new Set();
+
 
     const cleanedActivity =
         activity.filter(
             (item) => {
 
                 if (
-                    item.type !== "review"
+                    item.type !==
+                    "review"
                 ) {
                     return true;
                 }
 
+
                 const reviewKey =
                     `${item.userId}-${item.movieId}`;
+
 
                 if (
                     seenReviews.has(
@@ -231,11 +326,14 @@ export async function getFriendActivity(
                     return false;
                 }
 
+
                 seenReviews.add(
                     reviewKey
                 );
 
+
                 return true;
+
             }
         );
 
