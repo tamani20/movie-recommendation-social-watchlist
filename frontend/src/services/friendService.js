@@ -3,6 +3,7 @@ import {
     doc,
     getDoc,
     addDoc,
+    setDoc,
     getDocs,
     query,
     where,
@@ -325,6 +326,53 @@ export async function acceptFriendRequest(
         }
     );
 
+    // ==========================================
+// CREATE DETERMINISTIC FRIEND ACCESS RECORDS
+// ==========================================
+
+    const senderFriendRef =
+        doc(
+            db,
+            "users",
+            senderId,
+            "friends",
+            receiverId
+        );
+
+    const receiverFriendRef =
+        doc(
+            db,
+            "users",
+            receiverId,
+            "friends",
+            senderId
+        );
+
+
+    await Promise.all([
+        setDoc(
+            senderFriendRef,
+            {
+                friendId:
+                receiverId,
+
+                createdAt:
+                    serverTimestamp()
+            }
+        ),
+
+        setDoc(
+            receiverFriendRef,
+            {
+                friendId:
+                senderId,
+
+                createdAt:
+                    serverTimestamp()
+            }
+        )
+    ]);
+
     // Mark the request as accepted.
     await updateDoc(
         requestRef,
@@ -484,15 +532,47 @@ export async function getUserProfile(userId) {
 // ==========================================
 
 export async function removeFriend(
-    friendshipId
+    friendshipId,
+    currentUserId,
+    friendId
 ) {
-    const friendshipRef = doc(
-        db,
-        "friendships",
-        friendshipId
-    );
+    const friendshipRef =
+        doc(
+            db,
+            "friendships",
+            friendshipId
+        );
 
-    await deleteDoc(
-        friendshipRef
-    );
+    const currentUserFriendRef =
+        doc(
+            db,
+            "users",
+            currentUserId,
+            "friends",
+            friendId
+        );
+
+    const friendUserFriendRef =
+        doc(
+            db,
+            "users",
+            friendId,
+            "friends",
+            currentUserId
+        );
+
+
+    await Promise.all([
+        deleteDoc(
+            friendshipRef
+        ),
+
+        deleteDoc(
+            currentUserFriendRef
+        ),
+
+        deleteDoc(
+            friendUserFriendRef
+        )
+    ]);
 }

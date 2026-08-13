@@ -221,7 +221,8 @@ function Friends() {
     }
 
     async function handleRemoveFriend(
-        friendshipId
+        friendshipId,
+        friendId
     ) {
         const confirmed =
             window.confirm(
@@ -235,7 +236,9 @@ function Friends() {
         try {
 
             await removeFriend(
-                friendshipId
+                friendshipId,
+                currentUser.uid,
+                friendId
             );
 
             await loadSocialData();
@@ -602,7 +605,8 @@ function Friends() {
                                         className="friend-remove"
                                         onClick={() =>
                                             handleRemoveFriend(
-                                                friend.id
+                                                friend.id,
+                                                friend.friendId
                                             )
                                         }
                                     >

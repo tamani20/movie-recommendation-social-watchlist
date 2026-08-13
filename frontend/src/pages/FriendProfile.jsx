@@ -640,7 +640,7 @@ function FriendProfile() {
 
                     </div>
 
-                ) : watchlist.length === 0 ? (
+                ) : plannedMovies.length === 0 ? (
 
                     <div className="card">
 
@@ -661,7 +661,7 @@ function FriendProfile() {
                         className="friend-watchlist-grid"
                     >
 
-                        {watchlist.map(
+                        {plannedMovies.map(
                             (movie) => (
 
                                 <article
