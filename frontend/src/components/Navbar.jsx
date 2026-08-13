@@ -65,6 +65,10 @@ function Navbar() {
                                 Dashboard
                             </Link>
 
+                            <Link to="/profile">
+                                Profile
+                            </Link>
+
                             <Link to="/watchlist">
                                 Watchlist
                             </Link>

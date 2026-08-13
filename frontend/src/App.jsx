@@ -23,6 +23,8 @@ import FriendActivity from "./pages/FriendActivity";
 
 import ViewingHistory from "./pages/ViewingHistory";
 
+import Profile from "./pages/Profile";
+
 function App() {
     return (
         <BrowserRouter>
@@ -51,6 +53,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
                         </ProtectedRoute>
                     }
                 />
