@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 
+import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
-import { getUserProfile } from "../services/userService";
+
+import {
+    getUserProfile
+} from "../services/userService";
 
 import {
     getRecommendations
 } from "../services/recommendationService";
-
-import { Link } from "react-router-dom";
 
 import {
     getFriends,
@@ -26,6 +29,11 @@ function Dashboard() {
         logout
     } = useAuth();
 
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
     const [profile, setProfile] =
         useState(null);
 
@@ -35,11 +43,6 @@ function Dashboard() {
     const [friendActivity, setFriendActivity] =
         useState([]);
 
-    const [activityLoading, setActivityLoading] =
-        useState(true);
-
-    const [activityError, setActivityError] =
-        useState("");
 
     const [loading, setLoading] =
         useState(true);
@@ -47,49 +50,67 @@ function Dashboard() {
     const [recommendationLoading, setRecommendationLoading] =
         useState(true);
 
+    const [activityLoading, setActivityLoading] =
+        useState(true);
+
+
+    const [activityError, setActivityError] =
+        useState("");
+
+
+    // ==========================================
+    // LOAD DASHBOARD
+    // ==========================================
 
     useEffect(() => {
 
         async function loadDashboard() {
 
             if (!currentUser) {
+
                 setLoading(false);
+
+                setRecommendationLoading(false);
+
+                setActivityLoading(false);
+
                 return;
             }
 
-            try {
 
-                // ==================================
-                // LOAD USER PROFILE
-                // ==================================
+            // ==========================================
+            // LOAD PROFILE + RECOMMENDATIONS
+            // ==========================================
+
+            try {
 
                 const userProfile =
                     await getUserProfile(
                         currentUser.uid
                     );
 
+
                 setProfile(
                     userProfile
                 );
 
-
-                // ==================================
-                // LOAD RECOMMENDATIONS
-                // ==================================
 
                 const userRecommendations =
                     await getRecommendations(
                         currentUser.uid
                     );
 
+
                 console.log(
                     "Recommendations:",
                     userRecommendations
                 );
 
+
                 setRecommendations(
-                    userRecommendations
+                    userRecommendations || []
                 );
+
 
             } catch (error) {
 
@@ -98,18 +119,28 @@ function Dashboard() {
                     error
                 );
 
+
             } finally {
 
                 setLoading(false);
+
                 setRecommendationLoading(false);
+
             }
 
-            // ==================================
-// LOAD FRIEND ACTIVITY
-// ==================================
+
+            // ==========================================
+            // LOAD FRIEND ACTIVITY
+            // ==========================================
 
             try {
 
+                setActivityLoading(true);
+
+                setActivityError("");
+
+
+                // Get current user's friends.
                 const friends =
                     await getFriends(
                         currentUser.uid
@@ -123,31 +154,60 @@ function Dashboard() {
                     );
 
 
+                // No friends means there cannot
+                // be friend activity.
+                if (
+                    friendIds.length === 0
+                ) {
+
+                    setFriendActivity([]);
+
+                    return;
+                }
+
+
+                // Get combined review +
+                // watchlist activity.
                 const activity =
                     await getFriendActivity(
                         friendIds
                     );
 
 
-                // Load friend profiles so
-                // activity can display names.
-                const activityWithProfiles =
+                // ==========================================
+                // GET UNIQUE ACTIVITY USER IDS
+                // ==========================================
+
+                const uniqueFriendIds =
+                    [
+                        ...new Set(
+                            activity.map(
+                                (item) =>
+                                    item.userId
+                            )
+                        )
+                    ];
+
+
+                // ==========================================
+                // LOAD EACH PROFILE ONLY ONCE
+                // ==========================================
+
+                const profiles =
                     await Promise.all(
-                        activity.map(
-                            async (item) => {
+                        uniqueFriendIds.map(
+                            async (friendId) => {
 
                                 const friendProfile =
                                     await getFriendProfile(
-                                        item.userId
+                                        friendId
                                     );
 
-                                return {
-                                    ...item,
 
-                                    friendName:
-                                        friendProfile
-                                            ?.displayName ||
-                                        "Friend"
+                                return {
+                                    id: friendId,
+                                    profile:
+                                    friendProfile
                                 };
 
                             }
@@ -155,9 +215,45 @@ function Dashboard() {
                     );
 
 
+                // ==========================================
+                // CREATE PROFILE LOOKUP MAP
+                // ==========================================
+
+                const profileMap =
+                    Object.fromEntries(
+                        profiles.map(
+                            (item) => [
+                                item.id,
+                                item.profile
+                            ]
+                        )
+                    );
+
+
+                // ==========================================
+                // ATTACH FRIEND NAMES
+                // ==========================================
+
+                const activityWithProfiles =
+                    activity.map(
+                        (item) => ({
+
+                            ...item,
+
+                            friendName:
+                                profileMap[
+                                    item.userId
+                                    ]?.displayName ||
+                                "Friend"
+
+                        })
+                    );
+
+
                 setFriendActivity(
                     activityWithProfiles
                 );
+
 
             } catch (activityLoadError) {
 
@@ -166,19 +262,130 @@ function Dashboard() {
                     activityLoadError
                 );
 
+
                 setFriendActivity([]);
+
 
                 setActivityError(
                     "Unable to load friend activity."
                 );
 
+
             } finally {
+
                 setActivityLoading(false);
+
             }
+
         }
+
+
         loadDashboard();
 
     }, [currentUser]);
+
+
+    // ==========================================
+    // FORMAT ACTIVITY TIME
+    // ==========================================
+
+    function formatActivityTime(
+        timestamp
+    ) {
+
+        if (
+            !timestamp ||
+            !timestamp.toDate
+        ) {
+            return "";
+        }
+
+
+        const activityDate =
+            timestamp.toDate();
+
+
+        const now =
+            new Date();
+
+
+        const difference =
+            now.getTime() -
+            activityDate.getTime();
+
+
+        const minutes =
+            Math.floor(
+                difference /
+                (1000 * 60)
+            );
+
+
+        const hours =
+            Math.floor(
+                minutes / 60
+            );
+
+
+        const days =
+            Math.floor(
+                hours / 24
+            );
+
+
+        if (minutes < 1) {
+
+            return "Just now";
+
+        }
+
+
+        if (minutes < 60) {
+
+            return `${minutes} ${
+                minutes === 1
+                    ? "minute"
+                    : "minutes"
+            } ago`;
+
+        }
+
+
+        if (hours < 24) {
+
+            return `${hours} ${
+                hours === 1
+                    ? "hour"
+                    : "hours"
+            } ago`;
+
+        }
+
+
+        if (days === 1) {
+
+            return "Yesterday";
+
+        }
+
+
+        if (days < 7) {
+
+            return `${days} days ago`;
+
+        }
+
+
+        return activityDate.toLocaleDateString(
+            undefined,
+            {
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+            }
+        );
+
+    }
 
 
     // ==========================================
@@ -197,7 +404,9 @@ function Dashboard() {
                 "Logout failed:",
                 error
             );
+
         }
+
     }
 
 
@@ -208,12 +417,17 @@ function Dashboard() {
     if (loading) {
 
         return (
+
             <main>
+
                 <p>
                     Loading dashboard...
                 </p>
+
             </main>
+
         );
+
     }
 
 
@@ -225,9 +439,9 @@ function Dashboard() {
 
         <main>
 
-            {/* ==================================
+            {/* ==========================================
                 USER INFORMATION
-            ================================== */}
+            ========================================== */}
 
             <h1>
                 Dashboard
@@ -235,34 +449,42 @@ function Dashboard() {
 
 
             {profile && (
+
                 <>
+
                     <h2>
                         Welcome,{" "}
                         {profile.displayName}!
                     </h2>
+
 
                     <p>
                         Email:{" "}
                         {profile.email}
                     </p>
 
+
                     <p>
                         Account type:{" "}
                         {profile.role}
                     </p>
+
                 </>
+
             )}
 
 
-            {/* ==================================
+            {/* ==========================================
                 RECOMMENDATIONS
-            ================================== */}
+            ========================================== */}
 
             <hr />
+
 
             <h2>
                 Recommended For You
             </h2>
+
 
             <p>
                 Movies selected based on
@@ -279,10 +501,12 @@ function Dashboard() {
             ) : recommendations.length === 0 ? (
 
                 <p>
+
                     We don't have enough activity
                     to make recommendations yet.
                     Rate or review some movies to
                     get personalized recommendations.
+
                 </p>
 
             ) : (
@@ -296,6 +520,7 @@ function Dashboard() {
                                 movie.poster_path
                                     ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
                                     : null;
+
 
                             return (
 
@@ -345,20 +570,26 @@ function Dashboard() {
 
 
                                     <p>
+
                                         Rating:{" "}
+
                                         {typeof movie.vote_average ===
                                         "number"
                                             ? movie.vote_average.toFixed(
                                                 1
                                             )
                                             : "N/A"}
+
                                     </p>
 
 
                                     <p>
+
                                         Release:{" "}
+
                                         {movie.release_date ||
                                             "Unknown"}
+
                                     </p>
 
 
@@ -371,6 +602,7 @@ function Dashboard() {
                                 </article>
 
                             );
+
                         }
                     )}
 
@@ -379,139 +611,238 @@ function Dashboard() {
             )}
 
 
-            {/* ==================================
-    FRIEND ACTIVITY
-================================== */}
+            {/* ==========================================
+                FRIEND ACTIVITY
+            ========================================== */}
 
             <hr />
 
-            <h2>
-                Friend Activity
-            </h2>
 
-            <p>
-                See what your friends are watching,
-                reviewing, and adding to their
-                watchlists.
-            </p>
+            <section className="dashboard-activity">
+
+                <div
+                    className="dashboard-section-heading"
+                >
+
+                    <div>
+
+                        <h2>
+                            Recent Friend Activity
+                        </h2>
 
 
-            {activityLoading ? (
+                        <p>
 
-                <p>
-                    Loading friend activity...
-                </p>
+                            See what your friends are
+                            reviewing and adding to
+                            their watchlists.
 
-            ) : activityError ? (
+                        </p>
 
-                <p>
-                    {activityError}
-                </p>
+                    </div>
 
-            ) : friendActivity.length === 0 ? (
 
-                <p>
-                    Your friends haven't had any
-                    recent movie activity yet.
-                </p>
+                    <Link
+                        to="/activity"
+                        className="dashboard-view-all"
+                    >
+                        View All Activity →
+                    </Link>
 
-            ) : (
+                </div>
 
-                <section>
 
-                    {friendActivity
-                        .slice(0, 10)
-                        .map(
-                            (activity) => (
+                {activityLoading ? (
 
-                                <article
-                                    key={`${activity.type}-${activity.id}`}
-                                    style={{
-                                        marginBottom:
-                                            "15px",
-                                        padding:
-                                            "15px",
-                                        border:
-                                            "1px solid #ccc",
-                                        borderRadius:
-                                            "8px"
-                                    }}
-                                >
+                    <div className="page-message">
 
-                                    {activity.type ===
-                                    "review" ? (
+                        <p>
+                            Loading friend activity...
+                        </p>
 
-                                        <>
-                                            <h3>
-                                                {activity.friendName}
-                                                {" "}
-                                                reviewed{" "}
-                                                {activity.movieTitle}
-                                            </h3>
+                    </div>
 
-                                            <p>
-                                                ★{" "}
-                                                {activity.rating}
-                                                /5
-                                            </p>
+                ) : activityError ? (
 
-                                            <p>
-                                                {activity.review}
-                                            </p>
+                    <div className="error-message">
+
+                        {activityError}
+
+                    </div>
+
+                ) : friendActivity.length === 0 ? (
+
+                    <div className="dashboard-empty-card">
+
+                        <p>
+
+                            Your friends haven't had
+                            any recent movie activity
+                            yet.
+
+                        </p>
+
+
+                        <Link to="/friends">
+                            Find Friends →
+                        </Link>
+
+                    </div>
+
+                ) : (
+
+                    <div
+                        className="dashboard-activity-list"
+                    >
+
+                        {friendActivity
+                            .slice(0, 5)
+                            .map(
+                                (activity) => (
+
+                                    <article
+                                        key={`${activity.type}-${activity.id}`}
+                                        className="dashboard-activity-card"
+                                    >
+
+                                        {/* ACTIVITY ICON */}
+
+                                        <div
+                                            className="dashboard-activity-icon"
+                                        >
+
+                                            {activity.type ===
+                                            "review"
+                                                ? "⭐"
+                                                : "🎬"}
+
+                                        </div>
+
+
+                                        {/* ACTIVITY CONTENT */}
+
+                                        <div
+                                            className="dashboard-activity-content"
+                                        >
+
+                                            {activity.type ===
+                                            "review" ? (
+
+                                                <>
+
+                                                    <h3>
+
+                                                        {activity.friendName}
+                                                        {" reviewed "}
+                                                        {activity.movieTitle}
+
+                                                    </h3>
+
+
+                                                    <p
+                                                        className="dashboard-activity-time"
+                                                    >
+
+                                                        {formatActivityTime(
+                                                            activity.createdAt
+                                                        )}
+
+                                                    </p>
+
+
+                                                    <p
+                                                        className="dashboard-activity-rating"
+                                                    >
+
+                                                        ★{" "}
+                                                        {activity.rating}
+                                                        /5
+
+                                                    </p>
+
+
+                                                    {activity.review && (
+
+                                                        <p
+                                                            className="dashboard-activity-review"
+                                                        >
+
+                                                            {activity.review}
+
+                                                        </p>
+
+                                                    )}
+
+                                                </>
+
+                                            ) : (
+
+                                                <>
+
+                                                    <h3>
+
+                                                        {activity.friendName}
+                                                        {" added "}
+                                                        {activity.movieTitle}
+                                                        {" to their watchlist"}
+
+                                                    </h3>
+
+
+                                                    <p
+                                                        className="dashboard-activity-time"
+                                                    >
+
+                                                        {formatActivityTime(
+                                                            activity.createdAt
+                                                        )}
+
+                                                    </p>
+
+                                                </>
+
+                                            )}
+
 
                                             <Link
                                                 to={`/movies/${activity.movieId}`}
                                             >
-                                                View Movie
+                                                View Movie →
                                             </Link>
-                                        </>
 
-                                    ) : (
+                                        </div>
 
-                                        <>
-                                            <h3>
-                                                {activity.friendName}
-                                                {" "}
-                                                added{" "}
-                                                {activity.movieTitle}
-                                                {" "}
-                                                to their watchlist
-                                            </h3>
+                                    </article>
 
-                                            <Link
-                                                to={`/movies/${activity.movieId}`}
-                                            >
-                                                View Movie
-                                            </Link>
-                                        </>
+                                )
+                            )}
 
-                                    )}
+                    </div>
 
-                                </article>
+                )}
 
-                            )
-                        )}
-
-                </section>
-
-            )}
+            </section>
 
 
-            {/* ==================================
+            {/* ==========================================
                 GENERAL NAVIGATION
-            ================================== */}
+            ========================================== */}
 
             <hr />
+
 
             <h2>
                 Movie Recommendation &
                 Social Watchlist
             </h2>
 
+
             <p>
+
                 Explore movies, manage your
                 watchlist, read reviews, and
                 connect with friends.
+
             </p>
 
 
@@ -542,9 +873,9 @@ function Dashboard() {
             </p>
 
 
-            {/* ==================================
+            {/* ==========================================
                 LOGOUT
-            ================================== */}
+            ========================================== */}
 
             <button
                 onClick={
@@ -555,7 +886,9 @@ function Dashboard() {
             </button>
 
         </main>
+
     );
+
 }
 
 

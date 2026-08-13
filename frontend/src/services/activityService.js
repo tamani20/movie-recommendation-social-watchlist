@@ -181,10 +181,9 @@ export async function getFriendActivity(
         ...watchlist
     ];
 
-
-    // ==========================================
-    // SORT BY DATE
-    // ==========================================
+// ==========================================
+// SORT NEWEST → OLDEST
+// ==========================================
 
     activity.sort(
         (a, b) => {
@@ -204,5 +203,42 @@ export async function getFriendActivity(
     );
 
 
-    return activity;
+// ==========================================
+// REMOVE LEGACY DUPLICATE REVIEWS
+// ==========================================
+
+    const seenReviews =
+        new Set();
+
+    const cleanedActivity =
+        activity.filter(
+            (item) => {
+
+                if (
+                    item.type !== "review"
+                ) {
+                    return true;
+                }
+
+                const reviewKey =
+                    `${item.userId}-${item.movieId}`;
+
+                if (
+                    seenReviews.has(
+                        reviewKey
+                    )
+                ) {
+                    return false;
+                }
+
+                seenReviews.add(
+                    reviewKey
+                );
+
+                return true;
+            }
+        );
+
+
+    return cleanedActivity;
 }

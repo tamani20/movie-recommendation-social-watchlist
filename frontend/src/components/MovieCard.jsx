@@ -1,16 +1,51 @@
 import { Link } from "react-router-dom";
 
+
 const IMAGE_BASE_URL =
     "https://image.tmdb.org/t/p/w500";
 
+
 function MovieCard({ movie }) {
 
-    const posterUrl = movie.poster_path
-        ? `${IMAGE_BASE_URL}${movie.poster_path}`
-        : null;
+    // ==========================================
+    // POSTER
+    // ==========================================
+
+    const posterUrl =
+        movie.poster_path
+            ? `${IMAGE_BASE_URL}${movie.poster_path}`
+            : null;
+
+
+    // ==========================================
+    // RELEASE YEAR
+    // ==========================================
+
+    const releaseYear =
+        movie.release_date
+            ? movie.release_date.split("-")[0]
+            : "Unknown";
+
+
+    // ==========================================
+    // RATING
+    // ==========================================
+
+    const rating =
+        typeof movie.vote_average === "number"
+            ? movie.vote_average.toFixed(1)
+            : "N/A";
+
+
+    // ==========================================
+    // MOVIE CARD
+    // ==========================================
 
     return (
+
         <article className="movie-card">
+
+            {/* POSTER */}
 
             {posterUrl ? (
 
@@ -22,11 +57,15 @@ function MovieCard({ movie }) {
             ) : (
 
                 <div className="movie-card-placeholder">
+
                     No poster available
+
                 </div>
 
             )}
 
+
+            {/* MOVIE INFORMATION */}
 
             <div className="movie-card-content">
 
@@ -34,19 +73,16 @@ function MovieCard({ movie }) {
                     {movie.title}
                 </h3>
 
-                {movie.release_date && (
-                    <p>
-                        {movie.release_date}
-                    </p>
-                )}
 
-                {movie.vote_average !== undefined && (
-                    <p>
-                        ⭐{" "}
-                        {movie.vote_average.toFixed(1)}
-                        / 10
-                    </p>
-                )}
+                <p>
+                    {releaseYear}
+                </p>
+
+
+                <p>
+                    ★ {rating}
+                </p>
+
 
                 <Link
                     to={`/movies/${movie.id}`}
@@ -58,7 +94,10 @@ function MovieCard({ movie }) {
             </div>
 
         </article>
+
     );
+
 }
+
 
 export default MovieCard;
