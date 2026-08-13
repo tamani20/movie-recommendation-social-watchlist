@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {
+    Link,
+    useParams
+} from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -7,6 +10,11 @@ import {
     getFriends,
     getUserProfile
 } from "../services/friendService";
+
+import {
+    getUserReviews
+} from "../services/reviewService";
+
 
 function FriendProfile() {
 
@@ -17,10 +25,19 @@ function FriendProfile() {
     const [profile, setProfile] =
         useState(null);
 
+    const [reviews, setReviews] =
+        useState([]);
+
     const [loading, setLoading] =
         useState(true);
 
+    const [reviewsLoading, setReviewsLoading] =
+        useState(true);
+
     const [error, setError] =
+        useState("");
+
+    const [reviewsError, setReviewsError] =
         useState("");
 
 
@@ -35,13 +52,12 @@ function FriendProfile() {
             try {
 
                 setLoading(true);
+                setReviewsLoading(true);
                 setError("");
 
-                /*
-                 * Verify that the requested user
-                 * is actually one of the current
-                 * user's friends.
-                 */
+                // ==========================================
+                // VERIFY FRIENDSHIP
+                // ==========================================
 
                 const friends =
                     await getFriends(
@@ -64,12 +80,47 @@ function FriendProfile() {
                 }
 
 
+                // ==========================================
+                // LOAD FRIEND PROFILE
+                // ==========================================
+
                 const friendProfile =
                     await getUserProfile(id);
 
                 setProfile(
                     friendProfile
                 );
+
+                setLoading(false);
+
+
+                // ==========================================
+                // LOAD FRIEND REVIEWS
+                // ==========================================
+
+                try {
+
+                    const reviewsData =
+                        await getUserReviews(id);
+
+                    setReviews(
+                        reviewsData
+                    );
+
+                } catch (reviewError) {
+
+                    console.error(
+                        "Unable to load friend reviews:",
+                        reviewError
+                    );
+
+                    setReviews([]);
+
+                } finally {
+
+                    setReviewsLoading(false);
+
+                }
 
             } catch (error) {
 
@@ -82,9 +133,13 @@ function FriendProfile() {
                     "Unable to load friend profile."
                 );
 
-            } finally {
+                setReviewsError(
+                    "Unable to load this friend's reviews."
+                );
 
                 setLoading(false);
+                setReviewsLoading(false);
+                setReviewsError("");
 
             }
 
@@ -94,19 +149,28 @@ function FriendProfile() {
 
     }, [currentUser, id]);
 
+    // ==========================================
+    // LOADING
+    // ==========================================
 
     if (loading) {
 
         return (
             <main>
+
                 <p>
                     Loading friend profile...
                 </p>
+
             </main>
         );
 
     }
 
+
+    // ==========================================
+    // ERROR
+    // ==========================================
 
     if (error) {
 
@@ -123,6 +187,10 @@ function FriendProfile() {
     }
 
 
+    // ==========================================
+    // PROFILE NOT FOUND
+    // ==========================================
+
     if (!profile) {
 
         return (
@@ -138,23 +206,129 @@ function FriendProfile() {
     }
 
 
+    // ==========================================
+    // PROFILE
+    // ==========================================
+
     return (
 
         <main>
 
-            <section className="card">
+            {/* ==========================================
+                PROFILE HEADER
+            ========================================== */}
 
-                <h1>
-                    {profile.displayName}
-                </h1>
+            <section
+                className="card friend-profile-header"
+            >
 
-                <p>
-                    {profile.email}
-                </p>
+                <div className="friend-profile-avatar">
 
-                <p>
-                    Friend profile
-                </p>
+                    {profile.displayName
+                        ?.charAt(0)
+                        .toUpperCase()}
+
+                </div>
+
+                <div>
+
+                    <h1>
+                        {profile.displayName}
+                    </h1>
+
+                    <p>
+                        Friend
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            {/* ==========================================
+                RATINGS & REVIEWS
+            ========================================== */}
+
+            <section className="friend-profile-section">
+
+                <div className="friend-profile-section-heading">
+
+                    <h2>
+                        Ratings & Reviews
+                    </h2>
+
+                    <p>
+                        Movies{" "}
+                        {profile.displayName} has
+                        rated and reviewed.
+                    </p>
+
+                </div>
+
+
+                {reviewsLoading ? (
+
+                    <p>
+                        Loading reviews...
+                    </p>
+
+                ) : reviewsError ? (
+
+                    <div className="error-message">
+                        {reviewsError}
+                    </div>
+
+                ) : reviews.length === 0 ? (
+
+                    <div className="card">
+
+                        <p>
+                            {profile.displayName}
+                            {" "}
+                            hasn't reviewed any
+                            movies yet.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="friend-review-list">
+
+                        {reviews.map(
+                            (review) => (
+
+                                <article
+                                    key={review.id}
+                                    className="review-card friend-review-card"
+                                >
+
+                                    <h3>
+                                        {review.movieTitle}
+                                    </h3>
+
+                                    <p className="friend-review-rating">
+                                        ★ {review.rating}/5
+                                    </p>
+
+                                    <p>
+                                        {review.review}
+                                    </p>
+
+                                    <Link
+                                        to={`/movies/${review.movieId}`}
+                                    >
+                                        View Movie →
+                                    </Link>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
 
             </section>
 
@@ -163,5 +337,6 @@ function FriendProfile() {
     );
 
 }
+
 
 export default FriendProfile;

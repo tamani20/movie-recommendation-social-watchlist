@@ -130,6 +130,7 @@ export async function getMovieReviews(
     );
 }
 
+
 // ==========================================
 // GET USER'S REVIEW FOR A MOVIE
 // ==========================================
@@ -169,6 +170,48 @@ export async function getUserMovieReview(
         ...document.data()
     };
 }
+
+
+// ==========================================
+// GET ALL REVIEWS BY USER
+// ==========================================
+
+export async function getUserReviews(
+    userId
+) {
+    if (!userId) {
+        throw new Error(
+            "User ID is required."
+        );
+    }
+
+    const reviewsQuery =
+        query(
+            reviewsCollection,
+            where(
+                "userId",
+                "==",
+                userId
+            ),
+            orderBy(
+                "createdAt",
+                "desc"
+            )
+        );
+
+    const snapshot =
+        await getDocs(
+            reviewsQuery
+        );
+
+    return snapshot.docs.map(
+        (document) => ({
+            id: document.id,
+            ...document.data()
+        })
+    );
+}
+
 
 // ==========================================
 // UPDATE REVIEW
@@ -220,6 +263,7 @@ export async function updateReview(
         }
     );
 }
+
 
 // ==========================================
 // DELETE REVIEW

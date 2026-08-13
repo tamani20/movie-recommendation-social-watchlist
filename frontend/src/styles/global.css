@@ -2550,3 +2550,77 @@ hr {
 
     text-decoration: none;
 }
+
+/* ==========================================
+   FRIEND PROFILE
+========================================== */
+
+.friend-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-bottom: 32px;
+}
+
+.friend-profile-avatar {
+    width: 72px;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.friend-profile-header h1 {
+    margin: 0 0 6px;
+}
+
+.friend-profile-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.friend-profile-section {
+    margin-bottom: 40px;
+}
+
+.friend-profile-section-heading {
+    margin-bottom: 20px;
+}
+
+.friend-profile-section-heading h2 {
+    margin-bottom: 6px;
+}
+
+.friend-profile-section-heading p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.friend-review-list {
+    display: grid;
+    gap: 16px;
+}
+
+.friend-review-card {
+    margin-bottom: 0;
+}
+
+.friend-review-card h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.friend-review-rating {
+    color: #b45309;
+    font-weight: 700;
+}
