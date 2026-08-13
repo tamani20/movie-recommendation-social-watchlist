@@ -1464,6 +1464,13 @@ hr {
 .watchlist-page {
     padding-top: 45px;
 }
+.watchlist-movie-link {
+    display: inline-block;
+
+    margin-bottom: 14px;
+
+    font-weight: 600;
+}
 
 
 /* ==========================================
@@ -2369,6 +2376,98 @@ hr {
             12px 20px;
 }
 
+/* ==========================================
+   MOVIE WATCHLIST ACTIONS
+========================================== */
+
+.movie-watchlist-actions {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 12px;
+}
+
+
+.movie-watchlist-status {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+}
+
+
+.movie-watchlist-status.planned {
+    background: #eff6ff;
+
+    color: #1d4ed8;
+}
+
+
+.movie-watchlist-status.watched {
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+
+.movie-watchlist-button-group {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+
+.movie-status-secondary {
+    background: #374151;
+}
+
+
+.movie-status-secondary:hover {
+    background: #1f2937;
+}
+
+
+.movie-watchlist-remove {
+    background: #f3f4f6;
+
+    color: #374151;
+
+    border:
+            1px solid #d1d5db;
+}
+
+
+.movie-watchlist-remove:hover {
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+@media (max-width: 480px) {
+
+    .movie-watchlist-button-group {
+        width: 100%;
+    }
+
+
+    .movie-watchlist-button-group button {
+        width: 100%;
+    }
+
+}
 
 /* ==========================================
    MOVIE SECTIONS

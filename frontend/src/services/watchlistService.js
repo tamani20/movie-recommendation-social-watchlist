@@ -4,6 +4,7 @@ import {
     setDoc,
     deleteDoc,
     getDocs,
+    getDoc,
     serverTimestamp,
     updateDoc
 } from "firebase/firestore";
@@ -92,10 +93,11 @@ export async function addToWatchlist(
 
             watchedAt:
                 null
-
+        },
+        {
+            merge: false
         }
     );
-
 }
 
 
@@ -172,6 +174,42 @@ export async function getWatchlist(
 
 }
 
+// ==========================================
+// GET WATCHLIST MOVIE
+// ==========================================
+
+export async function getWatchlistMovie(
+    userId,
+    movieId
+) {
+
+    if (!userId || !movieId) {
+        return null;
+    }
+
+    const movieRef =
+        doc(
+            db,
+            "users",
+            userId,
+            "watchlist",
+            String(movieId)
+        );
+
+    const snapshot =
+        await getDoc(
+            movieRef
+        );
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    return {
+        id: snapshot.id,
+        ...snapshot.data()
+    };
+}
 
 // ==========================================
 // MARK MOVIE AS WATCHED

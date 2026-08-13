@@ -728,7 +728,7 @@ function Dashboard() {
                                 (activity) => (
 
                                     <article
-                                        key={`${activity.type}-${activity.id}`}
+                                        key={`${activity.type}-${activity.userId}-${activity.id}`}
                                         className="dashboard-activity-card"
                                     >
 

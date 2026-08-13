@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
 
 import {
@@ -224,6 +226,13 @@ function Watchlist() {
                                         </p>
 
                                     )}
+
+                                    <Link
+                                        to={`/movies/${movie.movieId}`}
+                                        className="watchlist-movie-link"
+                                    >
+                                        View Movie →
+                                    </Link>
 
 
                                     {/* =========================

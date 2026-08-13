@@ -446,7 +446,7 @@ function FriendActivity() {
                                 return (
 
                                     <article
-                                        key={`${activity.type}-${activity.id}`}
+                                        key={`${activity.type}-${activity.userId}-${activity.id}`}
                                         className="card friend-activity-card"
                                     >
 
@@ -535,7 +535,7 @@ function FriendActivity() {
                                 return (
 
                                     <article
-                                        key={`${activity.type}-${activity.id}`}
+                                        key={`${activity.type}-${activity.userId}-${activity.id}`}
                                         className="card friend-activity-card"
                                     >
 

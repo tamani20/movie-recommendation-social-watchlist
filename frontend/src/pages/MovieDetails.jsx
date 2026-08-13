@@ -6,7 +6,11 @@ import { getMovie } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 import {
-    addToWatchlist
+    addToWatchlist,
+    getWatchlistMovie,
+    markAsWatched,
+    markAsPlanned,
+    removeFromWatchlist
 } from "../services/watchlistService";
 
 import {
@@ -35,7 +39,20 @@ function MovieDetails() {
 
     const { currentUser } = useAuth();
 
+    // ==========================================
+    // WATCHLIST STATE
+    // ==========================================
+
+    const [watchlistItem, setWatchlistItem] =
+        useState(null);
+
+    const [watchlistLoading, setWatchlistLoading] =
+        useState(false);
+
     const [watchlistMessage, setWatchlistMessage] =
+        useState("");
+
+    const [watchlistError, setWatchlistError] =
         useState("");
 
     // ==========================================
@@ -183,6 +200,62 @@ function MovieDetails() {
         }
 
         loadMyReview();
+
+    }, [currentUser, id]);
+
+    // ==========================================
+// LOAD WATCHLIST STATUS
+// ==========================================
+
+    useEffect(() => {
+
+        async function loadWatchlistStatus() {
+
+            if (
+                !currentUser ||
+                !id
+            ) {
+
+                setWatchlistItem(null);
+
+                return;
+            }
+
+
+            try {
+
+                setWatchlistError("");
+
+                const existingItem =
+                    await getWatchlistMovie(
+                        currentUser.uid,
+                        String(id)
+                    );
+
+
+                setWatchlistItem(
+                    existingItem
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load watchlist status:",
+                    error
+                );
+
+
+                setWatchlistError(
+                    "Unable to load watchlist status."
+                );
+
+            }
+
+        }
+
+
+        loadWatchlistStatus();
 
     }, [currentUser, id]);
 
@@ -434,36 +507,280 @@ function MovieDetails() {
     }
 
 
-    // ==========================================
-    // ADD TO WATCHLIST
-    // ==========================================
+// ==========================================
+// ADD TO WATCHLIST
+// ==========================================
 
     async function handleAddToWatchlist() {
+
         if (!currentUser) {
-            setWatchlistMessage(
+
+            setWatchlistError(
                 "Please log in to use your watchlist."
             );
 
             return;
+
         }
 
+
         try {
+
+            setWatchlistLoading(true);
+
+            setWatchlistError("");
+
+            setWatchlistMessage("");
+
+
             await addToWatchlist(
                 currentUser.uid,
                 movie
             );
 
+
+            const updatedItem =
+                await getWatchlistMovie(
+                    currentUser.uid,
+                    String(movie.id)
+                );
+
+
+            setWatchlistItem(
+                updatedItem
+            );
+
+
             setWatchlistMessage(
                 "Movie added to your watchlist!"
             );
 
-        } catch (error) {
-            console.error(error);
 
-            setWatchlistMessage(
+        } catch (error) {
+
+            console.error(
+                "Unable to add movie to watchlist:",
+                error
+            );
+
+
+            setWatchlistError(
                 "Unable to add movie to watchlist."
             );
+
+
+        } finally {
+
+            setWatchlistLoading(false);
+
         }
+
+    }
+
+
+// ==========================================
+// MARK AS WATCHED
+// ==========================================
+
+    async function handleMarkAsWatched() {
+
+        if (
+            !currentUser ||
+            !watchlistItem
+        ) {
+            return;
+        }
+
+
+        try {
+
+            setWatchlistLoading(true);
+
+            setWatchlistError("");
+
+            setWatchlistMessage("");
+
+
+            await markAsWatched(
+                currentUser.uid,
+                movie.id
+            );
+
+
+            const updatedItem =
+                await getWatchlistMovie(
+                    currentUser.uid,
+                    String(movie.id)
+                );
+
+
+            setWatchlistItem(
+                updatedItem
+            );
+
+
+            setWatchlistMessage(
+                "Movie marked as watched!"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to mark movie as watched:",
+                error
+            );
+
+
+            setWatchlistError(
+                "Unable to mark movie as watched."
+            );
+
+
+        } finally {
+
+            setWatchlistLoading(false);
+
+        }
+
+    }
+
+
+// ==========================================
+// MARK AS PLANNED
+// ==========================================
+
+    async function handleMarkAsPlanned() {
+
+        if (
+            !currentUser ||
+            !watchlistItem
+        ) {
+            return;
+        }
+
+
+        try {
+
+            setWatchlistLoading(true);
+
+            setWatchlistError("");
+
+            setWatchlistMessage("");
+
+
+            await markAsPlanned(
+                currentUser.uid,
+                movie.id
+            );
+
+
+            const updatedItem =
+                await getWatchlistMovie(
+                    currentUser.uid,
+                    String(movie.id)
+                );
+
+
+            setWatchlistItem(
+                updatedItem
+            );
+
+
+            setWatchlistMessage(
+                "Movie moved back to Plan to Watch."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to mark movie as planned:",
+                error
+            );
+
+
+            setWatchlistError(
+                "Unable to update movie status."
+            );
+
+
+        } finally {
+
+            setWatchlistLoading(false);
+
+        }
+
+    }
+
+
+// ==========================================
+// REMOVE FROM WATCHLIST
+// ==========================================
+
+    async function handleRemoveFromWatchlist() {
+
+        if (
+            !currentUser ||
+            !watchlistItem
+        ) {
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Remove this movie from your watchlist?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            setWatchlistLoading(true);
+
+            setWatchlistError("");
+
+            setWatchlistMessage("");
+
+
+            await removeFromWatchlist(
+                currentUser.uid,
+                movie.id
+            );
+
+
+            setWatchlistItem(null);
+
+
+            setWatchlistMessage(
+                "Movie removed from your watchlist."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to remove movie:",
+                error
+            );
+
+
+            setWatchlistError(
+                "Unable to remove movie from watchlist."
+            );
+
+
+        } finally {
+
+            setWatchlistLoading(false);
+
+        }
+
     }
 
 
@@ -551,20 +868,162 @@ function MovieDetails() {
                         )}
 
 
-                    {/* WATCHLIST */}
+                    {/* ==========================================
+    WATCHLIST STATUS & ACTIONS
+========================================== */}
 
-                    <button
-                        className="movie-watchlist-button"
-                        onClick={handleAddToWatchlist}
-                    >
-                        + Add to Watchlist
-                    </button>
+                    <div className="movie-watchlist-actions">
 
-                    {watchlistMessage && (
-                        <p className="success-message">
-                            {watchlistMessage}
-                        </p>
-                    )}
+
+                        {/* NOT LOGGED IN */}
+
+                        {!currentUser ? (
+
+                            <>
+
+                                <button
+                                    className="movie-watchlist-button"
+                                    onClick={handleAddToWatchlist}
+                                >
+                                    + Add to Watchlist
+                                </button>
+
+                            </>
+
+
+                        ) : !watchlistItem ? (
+
+                            /* ==========================================
+                               NOT SAVED
+                            ========================================== */
+
+                            <button
+                                className="movie-watchlist-button"
+                                onClick={handleAddToWatchlist}
+                                disabled={watchlistLoading}
+                            >
+
+                                {watchlistLoading
+                                    ? "Adding..."
+                                    : "+ Add to Watchlist"}
+
+                            </button>
+
+
+                        ) : watchlistItem.status === "watched" ? (
+
+                            /* ==========================================
+                               WATCHED
+                            ========================================== */
+
+                            <>
+
+            <span className="movie-watchlist-status watched">
+
+                ✓ Watched
+
+            </span>
+
+
+                                <div className="movie-watchlist-button-group">
+
+                                    <button
+                                        className="movie-status-secondary"
+                                        onClick={handleMarkAsPlanned}
+                                        disabled={watchlistLoading}
+                                    >
+
+                                        {watchlistLoading
+                                            ? "Updating..."
+                                            : "Mark as Planned"}
+
+                                    </button>
+
+
+                                    <button
+                                        className="movie-watchlist-remove"
+                                        onClick={handleRemoveFromWatchlist}
+                                        disabled={watchlistLoading}
+                                    >
+                                        Remove
+                                    </button>
+
+                                </div>
+
+                            </>
+
+
+                        ) : (
+
+                            /* ==========================================
+                               PLANNED
+                            ========================================== */
+
+                            <>
+
+            <span className="movie-watchlist-status planned">
+
+                Plan to Watch
+
+            </span>
+
+
+                                <div className="movie-watchlist-button-group">
+
+                                    <button
+                                        className="movie-watchlist-button"
+                                        onClick={handleMarkAsWatched}
+                                        disabled={watchlistLoading}
+                                    >
+
+                                        {watchlistLoading
+                                            ? "Updating..."
+                                            : "✓ Mark as Watched"}
+
+                                    </button>
+
+
+                                    <button
+                                        className="movie-watchlist-remove"
+                                        onClick={handleRemoveFromWatchlist}
+                                        disabled={watchlistLoading}
+                                    >
+                                        Remove
+                                    </button>
+
+                                </div>
+
+                            </>
+
+                        )}
+
+
+                        {/* SUCCESS */}
+
+                        {watchlistMessage && (
+
+                            <p className="success-message">
+
+                                {watchlistMessage}
+
+                            </p>
+
+                        )}
+
+
+                        {/* ERROR */}
+
+                        {watchlistError && (
+
+                            <p className="error-message">
+
+                                {watchlistError}
+
+                            </p>
+
+                        )}
+
+                    </div>
 
                 </div>
 
