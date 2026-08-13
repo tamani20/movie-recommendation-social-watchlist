@@ -84,10 +84,28 @@ async function discoverMovies(
     return response.data;
 }
 
+// ==========================================
+// GET RELATED MOVIE RECOMMENDATIONS
+// ==========================================
+
+async function getMovieRecommendations(
+    movieId
+) {
+
+    const response =
+        await tmdbClient.get(
+            `/movie/${movieId}/recommendations`
+        );
+
+
+    return response.data;
+}
+
 module.exports = {
     searchMovies,
     getMovieById,
     getPopularMovies,
     getMovieGenres,
-    discoverMovies
+    discoverMovies,
+    getMovieRecommendations
 };

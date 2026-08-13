@@ -113,3 +113,29 @@ export async function discoverMovies(
 
     return response.json();
 }
+
+// ==========================================
+// GET RELATED MOVIES
+// ==========================================
+
+export async function getMovieRecommendations(
+    movieId
+) {
+
+    const response =
+        await fetch(
+            `${API_BASE_URL}/movies/${movieId}/recommendations`
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Failed to retrieve related movies"
+        );
+
+    }
+
+
+    return response.json();
+}

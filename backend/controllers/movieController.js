@@ -173,10 +173,66 @@ async function discoverMovies(
 
 }
 
+// ==========================================
+// GET RELATED MOVIE RECOMMENDATIONS
+// ==========================================
+
+async function getMovieRecommendations(
+    req,
+    res
+) {
+
+    try {
+
+        const { id } =
+            req.params;
+
+
+        if (!id) {
+
+            return res.status(400).json({
+                error:
+                    "Movie ID is required."
+            });
+
+        }
+
+
+        const recommendations =
+            await tmdbService
+                .getMovieRecommendations(
+                    id
+                );
+
+
+        res.json(
+            recommendations
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Movie recommendations error:",
+            error.response?.data ||
+            error.message
+        );
+
+
+        res.status(500).json({
+            error:
+                "Unable to retrieve related movies."
+        });
+
+    }
+
+}
+
 module.exports = {
     searchMovies,
     getMovie,
     getPopularMovies,
     getMovieGenres,
-    discoverMovies
+    discoverMovies,
+    getMovieRecommendations
 };

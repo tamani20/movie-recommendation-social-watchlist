@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { getMovie } from "../services/api";
+import {
+    getMovie,
+    getMovieRecommendations
+} from "../services/api";
+
+import MovieCard from "../components/MovieCard";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -36,6 +41,25 @@ function MovieDetails() {
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // ==========================================
+    // RELATED MOVIES STATE
+    // ==========================================
+
+    const [
+        relatedMovies,
+        setRelatedMovies
+    ] = useState([]);
+
+    const [
+        relatedMoviesLoading,
+        setRelatedMoviesLoading
+    ] = useState(true);
+
+    const [
+        relatedMoviesError,
+        setRelatedMoviesError
+    ] = useState("");
 
     const { currentUser } = useAuth();
 
@@ -106,6 +130,87 @@ function MovieDetails() {
         }
 
         loadMovie();
+
+    }, [id]);
+
+    // ==========================================
+// LOAD RELATED MOVIES
+// ==========================================
+
+    useEffect(() => {
+
+        async function loadRelatedMovies() {
+
+            if (!id) {
+                return;
+            }
+
+
+            try {
+
+                setRelatedMoviesLoading(true);
+
+                setRelatedMoviesError("");
+
+
+                const data =
+                    await getMovieRecommendations(
+                        id
+                    );
+
+
+                const results =
+                    data?.results ||
+                    [];
+
+
+                /*
+                 * Remove the current movie if it
+                 * ever appears in the response.
+                 */
+                const filteredResults =
+                    results.filter(
+                        (relatedMovie) =>
+                            String(
+                                relatedMovie.id
+                            ) !==
+                            String(id)
+                    );
+
+
+                setRelatedMovies(
+                    filteredResults
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load related movies:",
+                    error
+                );
+
+
+                setRelatedMovies([]);
+
+
+                setRelatedMoviesError(
+                    "Unable to load related movies."
+                );
+
+
+            } finally {
+
+                setRelatedMoviesLoading(
+                    false
+                );
+
+            }
+
+        }
+
+
+        loadRelatedMovies();
 
     }, [id]);
 
@@ -1203,8 +1308,8 @@ function MovieDetails() {
 
 
             {/* =========================
-            COMMUNITY REVIEWS
-        ========================== */}
+                COMMUNITY REVIEWS
+                ========================== */}
 
             <section className="movie-details-section">
 
@@ -1284,6 +1389,100 @@ function MovieDetails() {
 
                             )
                         )}
+
+                    </div>
+
+                )}
+
+            </section>
+
+            {/* ==========================================
+    RELATED MOVIES
+========================================== */}
+
+            <section
+                className="movie-details-section movie-related-section"
+            >
+
+                <div className="section-heading">
+
+                    <div>
+
+                        <h2>
+                            You May Also Like
+                        </h2>
+
+                        <p>
+                            More movies related to{" "}
+                            {movie.title}.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {/* LOADING */}
+
+                {relatedMoviesLoading ? (
+
+                    <div className="page-message">
+
+                        <p>
+                            Loading related movies...
+                        </p>
+
+                    </div>
+
+
+                ) : relatedMoviesError ? (
+
+                    /* ERROR */
+
+                    <div className="error-message">
+
+                        {relatedMoviesError}
+
+                    </div>
+
+
+                ) : relatedMovies.length === 0 ? (
+
+                    /* EMPTY */
+
+                    <div className="empty-state">
+
+                        <p>
+                            No related movie
+                            recommendations are
+                            available right now.
+                        </p>
+
+                    </div>
+
+
+                ) : (
+
+                    /* RELATED MOVIES */
+
+                    <div className="movie-grid">
+
+                        {relatedMovies
+                            .slice(0, 5)
+                            .map(
+                                (relatedMovie) => (
+
+                                    <MovieCard
+                                        key={
+                                            relatedMovie.id
+                                        }
+                                        movie={
+                                            relatedMovie
+                                        }
+                                    />
+
+                                )
+                            )}
 
                     </div>
 
