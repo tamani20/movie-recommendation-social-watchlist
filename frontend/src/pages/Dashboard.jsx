@@ -21,6 +21,10 @@ import {
     getFriendActivity
 } from "../services/activityService";
 
+import {
+    getViewingHistory
+} from "../services/watchlistService";
+
 
 function Dashboard() {
 
@@ -43,6 +47,8 @@ function Dashboard() {
     const [friendActivity, setFriendActivity] =
         useState([]);
 
+    const [recentlyWatched, setRecentlyWatched] =
+        useState([]);
 
     const [loading, setLoading] =
         useState(true);
@@ -53,8 +59,13 @@ function Dashboard() {
     const [activityLoading, setActivityLoading] =
         useState(true);
 
+    const [historyLoading, setHistoryLoading] =
+        useState(true);
 
     const [activityError, setActivityError] =
+        useState("");
+
+    const [historyError, setHistoryError] =
         useState("");
 
 
@@ -73,6 +84,8 @@ function Dashboard() {
                 setRecommendationLoading(false);
 
                 setActivityLoading(false);
+
+                setHistoryLoading(false);
 
                 return;
             }
@@ -128,6 +141,49 @@ function Dashboard() {
 
             }
 
+            // ==========================================
+// LOAD RECENTLY WATCHED
+// ==========================================
+
+            try {
+
+                setHistoryLoading(true);
+
+                setHistoryError("");
+
+
+                const history =
+                    await getViewingHistory(
+                        currentUser.uid
+                    );
+
+
+                setRecentlyWatched(
+                    history || []
+                );
+
+
+            } catch (historyLoadError) {
+
+                console.error(
+                    "Failed to load viewing history:",
+                    historyLoadError
+                );
+
+
+                setRecentlyWatched([]);
+
+
+                setHistoryError(
+                    "Unable to load recently watched movies."
+                );
+
+
+            } finally {
+
+                setHistoryLoading(false);
+
+            }
 
             // ==========================================
             // LOAD FRIEND ACTIVITY
@@ -387,6 +443,34 @@ function Dashboard() {
 
     }
 
+    // ==========================================
+// FORMAT WATCHED DATE
+// ==========================================
+
+    function formatWatchedDate(
+        watchedAt
+    ) {
+
+        if (
+            !watchedAt ||
+            !watchedAt.toDate
+        ) {
+            return "Date unavailable";
+        }
+
+
+        return watchedAt
+            .toDate()
+            .toLocaleDateString(
+                undefined,
+                {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric"
+                }
+            );
+
+    }
 
     // ==========================================
     // LOGOUT
@@ -472,7 +556,7 @@ function Dashboard() {
                     </p>
 
 
-                    {profile.role && (
+                    {profile?.role && (
 
                         <div className="dashboard-role">
                 {profile.role}
@@ -637,6 +721,159 @@ function Dashboard() {
 
             )}
 
+            {/* ==========================================
+    RECENTLY WATCHED
+========================================== */}
+
+            <hr />
+
+
+            <section className="dashboard-recent-history">
+
+                <div className="dashboard-section-heading">
+
+                    <div>
+
+                        <h2>
+                            Recently Watched
+                        </h2>
+
+                        <p>
+                            Your most recently watched
+                            movies.
+                        </p>
+
+                    </div>
+
+
+                    <Link
+                        to="/history"
+                        className="dashboard-view-all"
+                    >
+                        View History →
+                    </Link>
+
+                </div>
+
+
+                {historyLoading ? (
+
+                    <div className="page-message">
+
+                        <p>
+                            Loading recently watched movies...
+                        </p>
+
+                    </div>
+
+                ) : historyError ? (
+
+                    <div className="error-message">
+
+                        {historyError}
+
+                    </div>
+
+                ) : recentlyWatched.length === 0 ? (
+
+                    <div className="dashboard-empty-card">
+
+                        <p>
+                            You haven't marked any
+                            movies as watched yet.
+                        </p>
+
+                        <Link to="/watchlist">
+                            Go to My Watchlist →
+                        </Link>
+
+                    </div>
+
+                ) : (
+
+                    <div className="dashboard-history-grid">
+
+                        {recentlyWatched
+                            .slice(0, 4)
+                            .map(
+                                (movie) => {
+
+                                    const posterUrl =
+                                        movie.posterPath
+                                            ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
+                                            : null;
+
+
+                                    return (
+
+                                        <article
+                                            key={movie.id}
+                                            className="dashboard-history-card"
+                                        >
+
+                                            <Link
+                                                to={`/movies/${movie.movieId}`}
+                                                className="dashboard-history-poster-link"
+                                            >
+
+                                                {posterUrl ? (
+
+                                                    <img
+                                                        src={posterUrl}
+                                                        alt={`${movie.title} poster`}
+                                                    />
+
+                                                ) : (
+
+                                                    <div className="dashboard-history-placeholder">
+
+                                                        No poster available
+
+                                                    </div>
+
+                                                )}
+
+                                            </Link>
+
+
+                                            <div className="dashboard-history-content">
+
+                                                <h3>
+                                                    {movie.title}
+                                                </h3>
+
+
+                                                <p className="dashboard-history-date">
+
+                                                    ✓ Watched{" "}
+
+                                                    {formatWatchedDate(
+                                                        movie.watchedAt
+                                                    )}
+
+                                                </p>
+
+
+                                                <Link
+                                                    to={`/movies/${movie.movieId}`}
+                                                >
+                                                    View Movie →
+                                                </Link>
+
+                                            </div>
+
+                                        </article>
+
+                                    );
+
+                                }
+                            )}
+
+                    </div>
+
+                )}
+
+            </section>
 
             {/* ==========================================
                 FRIEND ACTIVITY

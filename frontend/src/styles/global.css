@@ -3267,6 +3267,154 @@ hr {
     font-weight: 600;
 }
 
+/* ==========================================
+   DASHBOARD RECENT HISTORY
+========================================== */
+
+.dashboard-recent-history {
+    margin-bottom: 40px;
+}
+
+
+.dashboard-history-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+}
+
+
+.dashboard-history-card {
+    overflow: hidden;
+
+    background: white;
+
+    border-radius: 12px;
+
+    border:
+            1px solid #e5e7eb;
+
+    box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.06);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+
+.dashboard-history-card:hover {
+    transform:
+            translateY(-4px);
+
+    box-shadow:
+            0 8px 20px
+            rgba(0, 0, 0, 0.10);
+}
+
+
+.dashboard-history-poster-link {
+    display: block;
+}
+
+
+.dashboard-history-poster-link:hover {
+    text-decoration: none;
+}
+
+
+.dashboard-history-card img {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.dashboard-history-placeholder {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: #e5e7eb;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+
+.dashboard-history-content {
+    padding: 14px;
+}
+
+
+.dashboard-history-content h3 {
+    margin:
+            0 0 8px;
+
+    font-size: 1rem;
+}
+
+
+.dashboard-history-date {
+    margin:
+            0 0 10px;
+
+    color: #166534;
+
+    font-size: 0.85rem;
+
+    font-weight: 700;
+}
+
+
+.dashboard-history-content a {
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   DASHBOARD HISTORY RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+
+    .dashboard-history-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .dashboard-history-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+}
 
 /* ==========================================
    DASHBOARD FRIEND ACTIVITY
