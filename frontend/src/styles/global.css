@@ -919,17 +919,53 @@ hr {
 
     .navbar-login,
     .navbar-register,
+    .navbar-profile,
     .navbar-logout {
         font-size: 0.85rem;
     }
 
 
     .navbar-register,
+    .navbar-profile,
     .navbar-logout {
         padding:
                 7px 10px;
     }
 
+}
+
+/* ==========================================
+   NAVBAR PROFILE BUTTON
+========================================== */
+
+.navbar-profile {
+    background: #123ea5;
+
+    color: white !important;
+
+    padding:
+            8px 14px;
+
+    border-radius: 7px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+
+.navbar-profile:hover {
+    background: #1d4ed8;
+
+    color: white !important;
+
+    text-decoration: none;
+
+    transform: translateY(-1px);
 }
 
 /* ==========================================

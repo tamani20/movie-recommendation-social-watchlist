@@ -65,10 +65,6 @@ function Navbar() {
                                 Dashboard
                             </Link>
 
-                            <Link to="/profile">
-                                Profile
-                            </Link>
-
                             <Link to="/watchlist">
                                 Watchlist
                             </Link>
@@ -98,12 +94,21 @@ function Navbar() {
 
                     {currentUser ? (
 
-                        <button
-                            className="navbar-logout"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </button>
+                        <>
+                            <Link
+                                to="/profile"
+                                className="navbar-profile"
+                            >
+                                Profile
+                            </Link>
+
+                            <button
+                                className="navbar-logout"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </button>
+                        </>
 
                     ) : (
 
