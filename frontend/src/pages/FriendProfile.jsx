@@ -15,6 +15,10 @@ import {
     getUserReviews
 } from "../services/reviewService";
 
+import {
+    getWatchlist
+} from "../services/watchlistService";
+
 
 function FriendProfile() {
 
@@ -22,11 +26,20 @@ function FriendProfile() {
 
     const { currentUser } = useAuth();
 
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
     const [profile, setProfile] =
         useState(null);
 
     const [reviews, setReviews] =
         useState([]);
+
+    const [watchlist, setWatchlist] =
+        useState([]);
+
 
     const [loading, setLoading] =
         useState(true);
@@ -34,12 +47,23 @@ function FriendProfile() {
     const [reviewsLoading, setReviewsLoading] =
         useState(true);
 
+    const [watchlistLoading, setWatchlistLoading] =
+        useState(true);
+
+
     const [error, setError] =
         useState("");
 
     const [reviewsError, setReviewsError] =
         useState("");
 
+    const [watchlistError, setWatchlistError] =
+        useState("");
+
+
+    // ==========================================
+    // LOAD FRIEND PROFILE
+    // ==========================================
 
     useEffect(() => {
 
@@ -49,11 +73,21 @@ function FriendProfile() {
                 return;
             }
 
+
             try {
 
                 setLoading(true);
+
                 setReviewsLoading(true);
+
+                setWatchlistLoading(true);
+
                 setError("");
+
+                setReviewsError("");
+
+                setWatchlistError("");
+
 
                 // ==========================================
                 // VERIFY FRIENDSHIP
@@ -64,11 +98,13 @@ function FriendProfile() {
                         currentUser.uid
                     );
 
+
                 const isFriend =
                     friends.some(
                         (friend) =>
                             friend.friendId === id
                     );
+
 
                 if (!isFriend) {
 
@@ -87,10 +123,23 @@ function FriendProfile() {
                 const friendProfile =
                     await getUserProfile(id);
 
+
+                if (!friendProfile) {
+
+                    setError(
+                        "Friend profile not found."
+                    );
+
+                    return;
+                }
+
+
                 setProfile(
                     friendProfile
                 );
 
+
+                // Profile itself loaded successfully.
                 setLoading(false);
 
 
@@ -103,8 +152,9 @@ function FriendProfile() {
                     const reviewsData =
                         await getUserReviews(id);
 
+
                     setReviews(
-                        reviewsData
+                        reviewsData || []
                     );
 
                 } catch (reviewError) {
@@ -114,13 +164,54 @@ function FriendProfile() {
                         reviewError
                     );
 
+
                     setReviews([]);
+
+                    setReviewsError(
+                        "Unable to load this friend's reviews."
+                    );
 
                 } finally {
 
                     setReviewsLoading(false);
 
                 }
+
+
+                // ==========================================
+                // LOAD FRIEND WATCHLIST
+                // ==========================================
+
+                try {
+
+                    const watchlistData =
+                        await getWatchlist(id);
+
+
+                    setWatchlist(
+                        watchlistData || []
+                    );
+
+                } catch (watchlistError) {
+
+                    console.error(
+                        "Unable to load friend watchlist:",
+                        watchlistError
+                    );
+
+
+                    setWatchlist([]);
+
+                    setWatchlistError(
+                        "Unable to load this friend's watchlist."
+                    );
+
+                } finally {
+
+                    setWatchlistLoading(false);
+
+                }
+
 
             } catch (error) {
 
@@ -129,28 +220,50 @@ function FriendProfile() {
                     error
                 );
 
+
                 setError(
                     "Unable to load friend profile."
                 );
 
-                setReviewsError(
-                    "Unable to load this friend's reviews."
-                );
+            } finally {
 
                 setLoading(false);
-                setReviewsLoading(false);
-                setReviewsError("");
 
             }
 
         }
 
+
+        // ==========================================
+        // CALL THE FUNCTION
+        // ==========================================
+
         loadFriendProfile();
 
     }, [currentUser, id]);
 
+
     // ==========================================
-    // LOADING
+    // WAIT FOR AUTHENTICATION
+    // ==========================================
+
+    if (!currentUser) {
+
+        return (
+            <main>
+
+                <p>
+                    Loading...
+                </p>
+
+            </main>
+        );
+
+    }
+
+
+    // ==========================================
+    // LOADING PROFILE
     // ==========================================
 
     if (loading) {
@@ -169,7 +282,7 @@ function FriendProfile() {
 
 
     // ==========================================
-    // ERROR
+    // PROFILE ERROR
     // ==========================================
 
     if (error) {
@@ -178,7 +291,9 @@ function FriendProfile() {
             <main>
 
                 <div className="error-message">
+
                     {error}
+
                 </div>
 
             </main>
@@ -197,7 +312,9 @@ function FriendProfile() {
             <main>
 
                 <div className="empty-state">
+
                     Friend profile not found.
+
                 </div>
 
             </main>
@@ -230,6 +347,7 @@ function FriendProfile() {
 
                 </div>
 
+
                 <div>
 
                     <h1>
@@ -249,18 +367,24 @@ function FriendProfile() {
                 RATINGS & REVIEWS
             ========================================== */}
 
-            <section className="friend-profile-section">
+            <section
+                className="friend-profile-section"
+            >
 
-                <div className="friend-profile-section-heading">
+                <div
+                    className="friend-profile-section-heading"
+                >
 
                     <h2>
                         Ratings & Reviews
                     </h2>
 
                     <p>
+
                         Movies{" "}
                         {profile.displayName} has
                         rated and reviewed.
+
                     </p>
 
                 </div>
@@ -275,7 +399,9 @@ function FriendProfile() {
                 ) : reviewsError ? (
 
                     <div className="error-message">
+
                         {reviewsError}
+
                     </div>
 
                 ) : reviews.length === 0 ? (
@@ -283,17 +409,21 @@ function FriendProfile() {
                     <div className="card">
 
                         <p>
+
                             {profile.displayName}
                             {" "}
                             hasn't reviewed any
                             movies yet.
+
                         </p>
 
                     </div>
 
                 ) : (
 
-                    <div className="friend-review-list">
+                    <div
+                        className="friend-review-list"
+                    >
 
                         {reviews.map(
                             (review) => (
@@ -307,19 +437,160 @@ function FriendProfile() {
                                         {review.movieTitle}
                                     </h3>
 
-                                    <p className="friend-review-rating">
+
+                                    <p
+                                        className="friend-review-rating"
+                                    >
+
                                         ★ {review.rating}/5
+
                                     </p>
+
 
                                     <p>
                                         {review.review}
                                     </p>
+
 
                                     <Link
                                         to={`/movies/${review.movieId}`}
                                     >
                                         View Movie →
                                     </Link>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
+
+            </section>
+
+
+            {/* ==========================================
+                WATCHLIST
+            ========================================== */}
+
+            <section
+                className="friend-profile-section"
+            >
+
+                <div
+                    className="friend-profile-section-heading"
+                >
+
+                    <h2>
+                        Watchlist
+                    </h2>
+
+
+                    <p>
+
+                        Movies{" "}
+                        {profile.displayName} has
+                        added to their watchlist.
+
+                    </p>
+
+                </div>
+
+
+                {watchlistLoading ? (
+
+                    <p>
+                        Loading watchlist...
+                    </p>
+
+                ) : watchlistError ? (
+
+                    <div className="error-message">
+
+                        {watchlistError}
+
+                    </div>
+
+                ) : watchlist.length === 0 ? (
+
+                    <div className="card">
+
+                        <p>
+
+                            {profile.displayName}
+                            {" "}
+                            hasn't added any movies to
+                            their watchlist yet.
+
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div
+                        className="friend-watchlist-grid"
+                    >
+
+                        {watchlist.map(
+                            (movie) => (
+
+                                <article
+                                    key={movie.id}
+                                    className="friend-watchlist-card"
+                                >
+
+                                    {/* POSTER */}
+
+                                    {movie.posterPath ? (
+
+                                        <img
+                                            src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
+                                            alt={`${movie.title} poster`}
+                                        />
+
+                                    ) : (
+
+                                        <div
+                                            className="friend-watchlist-placeholder"
+                                        >
+                                            No poster available
+                                        </div>
+
+                                    )}
+
+
+                                    {/* MOVIE INFORMATION */}
+
+                                    <div
+                                        className="friend-watchlist-card-content"
+                                    >
+
+                                        <h3>
+                                            {movie.title}
+                                        </h3>
+
+
+                                        {movie.releaseDate && (
+
+                                            <p>
+
+                                                Release date:{" "}
+                                                {movie.releaseDate}
+
+                                            </p>
+
+                                        )}
+
+
+                                        <Link
+                                            to={`/movies/${movie.movieId}`}
+                                        >
+                                            View Movie →
+                                        </Link>
+
+                                    </div>
 
                                 </article>
 
