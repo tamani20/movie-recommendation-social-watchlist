@@ -4,7 +4,8 @@ const {
     searchMovies,
     getMovie,
     getPopularMovies,
-    getMovieGenres
+    getMovieGenres,
+    discoverMovies
 } = require("../controllers/movieController");
 
 const router = express.Router();
@@ -12,6 +13,7 @@ const router = express.Router();
 router.get("/search", searchMovies);
 router.get("/popular", getPopularMovies);
 router.get("/genres", getMovieGenres);
+router.get("/discover", discoverMovies);
 router.get("/:id", getMovie);
 
 module.exports = router;

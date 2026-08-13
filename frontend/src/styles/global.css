@@ -288,6 +288,112 @@ select:focus {
     background: #1f2937;
 }
 
+/* ==========================================
+   MOVIE FILTER FORM
+========================================== */
+
+.movie-filter-form {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 2fr)
+        minmax(160px, 1fr)
+        minmax(130px, 0.7fr)
+        auto;
+
+    gap: 14px;
+
+    align-items: end;
+}
+
+
+.movie-filter-field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.movie-filter-field label {
+    color: #374151;
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+}
+
+
+.movie-filter-field input,
+.movie-filter-field select {
+    width: 100%;
+
+    max-width: none;
+}
+
+
+.movie-filter-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+.movie-filter-actions button {
+    white-space: nowrap;
+}
+
+
+@media (max-width: 950px) {
+
+    .movie-filter-form {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .movie-filter-title {
+        grid-column:
+                1 / -1;
+    }
+
+
+    .movie-filter-actions {
+        grid-column:
+                1 / -1;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .movie-filter-form {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .movie-filter-title,
+    .movie-filter-actions {
+        grid-column:
+                auto;
+    }
+
+
+    .movie-filter-actions {
+        flex-direction: column;
+    }
+
+
+    .movie-filter-actions button {
+        width: 100%;
+    }
+
+}
 
 /* ==========================================
    MOVIES SECTION HEADER

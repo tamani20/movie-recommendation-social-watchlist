@@ -45,9 +45,49 @@ async function getMovieGenres() {
     return response.data;
 }
 
+async function discoverMovies(
+    genreId,
+    year
+) {
+
+    const params = {
+        sort_by:
+            "popularity.desc"
+    };
+
+
+    if (genreId) {
+
+        params.with_genres =
+            genreId;
+
+    }
+
+
+    if (year) {
+
+        params.primary_release_year =
+            year;
+
+    }
+
+
+    const response =
+        await tmdbClient.get(
+            "/discover/movie",
+            {
+                params
+            }
+        );
+
+
+    return response.data;
+}
+
 module.exports = {
     searchMovies,
     getMovieById,
     getPopularMovies,
-    getMovieGenres
+    getMovieGenres,
+    discoverMovies
 };

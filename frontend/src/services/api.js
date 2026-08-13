@@ -66,3 +66,50 @@ export async function getMovieGenres() {
 
     return response.json();
 }
+
+export async function discoverMovies(
+    genreId,
+    year
+) {
+
+    const params =
+        new URLSearchParams();
+
+
+    if (genreId) {
+
+        params.set(
+            "genre",
+            genreId
+        );
+
+    }
+
+
+    if (year) {
+
+        params.set(
+            "year",
+            year
+        );
+
+    }
+
+
+    const response =
+        await fetch(
+            `${API_BASE_URL}/movies/discover?${params.toString()}`
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Movie discovery failed"
+        );
+
+    }
+
+
+    return response.json();
+}

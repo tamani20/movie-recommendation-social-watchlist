@@ -94,9 +94,89 @@ async function getMovieGenres(req, res) {
     }
 }
 
+async function discoverMovies(
+    req,
+    res
+) {
+
+    try {
+
+        const {
+            genre,
+            year
+        } = req.query;
+
+
+        // At least one filter should exist.
+        if (!genre && !year) {
+
+            return res.status(400).json({
+                error:
+                    "Genre or release year is required."
+            });
+
+        }
+
+
+        // Validate year if provided.
+        if (year) {
+
+            const numericYear =
+                Number(year);
+
+
+            if (
+                !Number.isInteger(
+                    numericYear
+                ) ||
+                numericYear < 1870 ||
+                numericYear > 2100
+            ) {
+
+                return res.status(400).json({
+                    error:
+                        "Release year is invalid."
+                });
+
+            }
+
+        }
+
+
+        const movies =
+            await tmdbService.discoverMovies(
+                genre || null,
+                year || null
+            );
+
+
+        res.json(
+            movies
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Movie discovery error:",
+            error.response?.data ||
+            error.message
+        );
+
+
+        res.status(500).json({
+            error:
+                "Unable to discover movies."
+        });
+
+    }
+
+}
+
 module.exports = {
     searchMovies,
     getMovie,
     getPopularMovies,
-    getMovieGenres
+    getMovieGenres,
+    discoverMovies
 };
