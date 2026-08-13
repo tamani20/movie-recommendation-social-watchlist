@@ -13,6 +13,8 @@ import {
     getMovieGenres
 } from "./api";
 
+const movieGenreCache =
+    new Map();
 
 // ==========================================
 // GET USER REVIEWS
@@ -81,24 +83,65 @@ async function getMovieGenresForMovie(
     movieId
 ) {
 
+    const cacheKey =
+        String(movieId);
+
+
+    if (
+        movieGenreCache.has(
+            cacheKey
+        )
+    ) {
+
+        return movieGenreCache.get(
+            cacheKey
+        );
+
+    }
+
+
     try {
 
         const movie =
-            await getMovie(movieId);
+            await getMovie(
+                movieId
+            );
+
 
         if (
             !movie ||
             !movie.genres
         ) {
+
+            movieGenreCache.set(
+                cacheKey,
+                []
+            );
+
             return [];
         }
 
-        return movie.genres.map(
-            (genre) => ({
-                id: genre.id,
-                name: genre.name
-            })
+
+        const genres =
+            movie.genres.map(
+                (genre) => ({
+                    id:
+                    genre.id,
+
+                    name:
+                    genre.name
+                })
+            );
+
+
+        movieGenreCache.set(
+            cacheKey,
+            genres
         );
+
+
+        return genres;
+
 
     } catch (error) {
 
@@ -107,8 +150,11 @@ async function getMovieGenresForMovie(
             error
         );
 
+
         return [];
+
     }
+
 }
 
 
@@ -117,10 +163,40 @@ async function getMovieGenresForMovie(
 // ==========================================
 
 async function buildGenrePreferences(
-    reviews
+    reviews,
+    watchlist
 ) {
 
     const genreScores = {};
+
+
+    // ==========================================
+    // HELPER: ADD GENRE SCORE
+    // ==========================================
+
+    function addGenreScore(
+        genreName,
+        weight
+    ) {
+
+        if (!genreName) {
+            return;
+        }
+
+        if (
+            !genreScores[genreName]
+        ) {
+            genreScores[genreName] = 0;
+        }
+
+        genreScores[genreName] +=
+            weight;
+    }
+
+
+    // ==========================================
+    // REVIEW SIGNALS
+    // ==========================================
 
     for (const review of reviews) {
 
@@ -136,29 +212,86 @@ async function buildGenrePreferences(
             continue;
         }
 
+
         let ratingWeight = 0;
 
-        if (rating >= 4) {
 
-            ratingWeight = rating;
+        if (rating === 5) {
 
-        } else if (rating <= 2) {
+            ratingWeight = 6;
 
-            ratingWeight = -rating;
+        } else if (rating === 4) {
+
+            ratingWeight = 4;
+
+        } else if (rating === 3) {
+
+            ratingWeight = 1;
+
+        } else if (rating === 2) {
+
+            ratingWeight = -3;
+
+        } else if (rating === 1) {
+
+            ratingWeight = -5;
+
         }
+
 
         for (const genre of genres) {
 
-            if (
-                !genreScores[genre.name]
-            ) {
-                genreScores[genre.name] = 0;
-            }
+            addGenreScore(
+                genre.name,
+                ratingWeight
+            );
 
-            genreScores[genre.name] +=
-                ratingWeight;
         }
+
     }
+
+
+    // ==========================================
+    // WATCHLIST / HISTORY SIGNALS
+    // ==========================================
+
+    for (const item of watchlist) {
+
+        const genres =
+            await getMovieGenresForMovie(
+                item.movieId
+            );
+
+
+        if (!genres.length) {
+            continue;
+        }
+
+
+        /*
+         * Watched movies are a stronger
+         * preference signal than planned
+         * movies because the user actually
+         * completed them.
+         */
+
+        const activityWeight =
+            item.status === "watched"
+                ? 2.5
+                : 1;
+
+
+        for (const genre of genres) {
+
+            addGenreScore(
+                genre.name,
+                activityWeight
+            );
+
+        }
+
+    }
+
 
     return genreScores;
 }
@@ -199,7 +332,7 @@ function calculateMovieScore(
             ) {
 
                 score +=
-                    genreScores[genreName];
+                    genreScores[genreName] * 1.25;
             }
         }
     }
@@ -311,7 +444,8 @@ export async function getRecommendations(
 
         const genreScores =
             await buildGenrePreferences(
-                reviews
+                reviews,
+                watchlist
             );
 
 
@@ -349,6 +483,61 @@ export async function getRecommendations(
                         )
                 )
             );
+
+        // ----------------------------------
+        // Watched movie IDs
+        // ----------------------------------
+
+        const watchedMovieIds =
+            new Set(
+                watchlist
+                    .filter(
+                        (movie) =>
+                            movie.status ===
+                            "watched"
+                    )
+                    .map(
+                        (movie) =>
+                            String(
+                                movie.movieId
+                            )
+                    )
+            );
+
+
+        // ----------------------------------
+        // Planned movie IDs
+        // ----------------------------------
+
+        const plannedMovieIds =
+            new Set(
+                watchlist
+                    .filter(
+                        (movie) =>
+                            movie.status !==
+                            "watched"
+                    )
+                    .map(
+                        (movie) =>
+                            String(
+                                movie.movieId
+                            )
+                    )
+            );
+
+        console.log(
+            "Recommendation activity:",
+            {
+                reviews:
+                reviews.length,
+
+                watched:
+                watchedMovieIds.size,
+
+                planned:
+                plannedMovieIds.size
+            }
+        );
 
 
         // ----------------------------------
@@ -389,10 +578,35 @@ export async function getRecommendations(
                             genreMap
                         );
 
+                    const matchingGenres =
+                        Array.isArray(
+                            movie.genre_ids
+                        )
+                            ? movie.genre_ids
+                                .map(
+                                    (genreId) =>
+                                        genreMap[
+                                            genreId
+                                            ]
+                                )
+                                .filter(
+                                    (genreName) =>
+                                        genreName &&
+                                        genreScores[
+                                            genreName
+                                            ] > 0
+                                )
+                            : [];
+
+
                     return {
                         ...movie,
+
                         recommendationScore:
-                        score
+                        score,
+
+                        recommendationGenres:
+                        matchingGenres
                     };
                 }
             );
